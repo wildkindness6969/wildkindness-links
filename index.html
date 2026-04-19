@@ -126,43 +126,26 @@
       justify-content: center;
     }
 
-    /* Rotating outer ring */
+    /* Heartbeat glow — pulses with the thump */
     .logo-ring {
-      position: absolute;
-      inset: -12px;
-      border-radius: 50%;
-      background: conic-gradient(
-        from 0deg,
-        transparent 0deg,
-        rgba(227,28,28,0.6) 60deg,
-        rgba(245,197,24,0.8) 120deg,
-        transparent 180deg,
-        rgba(227,28,28,0.4) 240deg,
-        rgba(245,197,24,0.6) 300deg,
-        transparent 360deg
-      );
-      animation: ringRotate 4s linear infinite;
-      mask: radial-gradient(circle, transparent 84px, black 86px);
-      -webkit-mask: radial-gradient(circle, transparent 84px, black 86px);
+      display: none;
     }
 
-    @keyframes ringRotate {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
-
-    /* Pulsing glow behind logo */
     .logo-glow {
       position: absolute;
       inset: -20px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(227,28,28,0.25) 0%, transparent 70%);
-      animation: glowPulse 2.5s ease-in-out infinite;
+      background: radial-gradient(circle, rgba(227,28,28,0.35) 0%, transparent 70%);
+      animation: heartGlow 0.9s ease-in-out infinite;
     }
 
-    @keyframes glowPulse {
-      0%, 100% { opacity: 0.6; transform: scale(1); }
-      50%       { opacity: 1;   transform: scale(1.08); }
+    @keyframes heartGlow {
+      0%   { opacity: 0.3; transform: scale(0.95); }
+      14%  { opacity: 1;   transform: scale(1.15); }
+      28%  { opacity: 0.5; transform: scale(1.0); }
+      42%  { opacity: 0.9; transform: scale(1.1); }
+      70%  { opacity: 0.2; transform: scale(0.95); }
+      100% { opacity: 0.3; transform: scale(0.95); }
     }
 
     .logo {
@@ -171,13 +154,19 @@
       object-fit: contain;
       position: relative;
       z-index: 2;
-      filter: drop-shadow(0 0 16px rgba(227,28,28,0.4));
-      animation: logoBreathe 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 16px rgba(227,28,28,0.5));
+      animation: heartbeat 0.9s ease-in-out infinite;
+      transform-origin: center center;
     }
 
-    @keyframes logoBreathe {
-      0%, 100% { transform: scale(1); }
-      50%       { transform: scale(1.04); }
+    /* Classic lub-dub heartbeat: two quick pumps then rest */
+    @keyframes heartbeat {
+      0%   { transform: scale(1); }
+      14%  { transform: scale(1.18); }
+      28%  { transform: scale(1.0); }
+      42%  { transform: scale(1.12); }
+      70%  { transform: scale(1); }
+      100% { transform: scale(1); }
     }
 
     .tagline {
