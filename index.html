@@ -136,7 +136,7 @@
       inset: -20px;
       border-radius: 50%;
       background: radial-gradient(circle, rgba(227,28,28,0.35) 0%, transparent 70%);
-      animation: heartGlow 1.6s ease-in-out infinite;
+      animation: heartGlow 3.2s ease-in-out infinite;
     }
 
     @keyframes heartGlow {
@@ -155,17 +155,17 @@
       position: relative;
       z-index: 2;
       filter: drop-shadow(0 0 16px rgba(227,28,28,0.5));
-      animation: heartbeat 1.6s ease-in-out infinite;
+      animation: heartbeat 3.2s ease-in-out infinite;
       transform-origin: center center;
     }
 
-    /* Classic lub-dub heartbeat: two quick pumps then rest */
+    /* Heartbeat fires in first half, long rest in second half */
     @keyframes heartbeat {
       0%   { transform: scale(1); }
-      14%  { transform: scale(1.07); }
-      28%  { transform: scale(1.0); }
-      42%  { transform: scale(1.05); }
-      70%  { transform: scale(1); }
+      7%   { transform: scale(1.07); }
+      14%  { transform: scale(1.0); }
+      21%  { transform: scale(1.05); }
+      35%  { transform: scale(1); }
       100% { transform: scale(1); }
     }
 
