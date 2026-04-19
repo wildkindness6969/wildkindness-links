@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Wild Kindness — Hung. Bubble Butt. Versatile. San Francisco Bay Area & Beyond.">
+  <meta property="og:title" content="Wild Kindness">
+  <meta property="og:description" content="Content creator & model. San Francisco Bay Area.">
+  <meta property="og:image" content="https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png">
+  <title>Wild Kindness</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black: #0A0A0A;
+      --white: #FFFFFF;
+      --gray:  #888888;
+      --red:   #E31C1C;
+      --gold:  #F5C518;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      height: 100%;
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Space Grotesk', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── AGE GATE ── */
+    .age-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: var(--black);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      text-align: center;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    .age-gate.dismissed {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .age-gate-logo {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+      margin-bottom: 32px;
+      filter: drop-shadow(0 0 20px rgba(227,28,28,0.3));
+    }
+    .age-gate h2 {
+      font-family: 'Anton', sans-serif;
+      font-size: clamp(28px, 7vw, 40px);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 12px;
+    }
+    .age-gate p {
+      font-size: 13px;
+      color: var(--gray);
+      letter-spacing: 0.05em;
+      max-width: 280px;
+      line-height: 1.6;
+      margin-bottom: 36px;
+    }
+    .age-btn {
+      display: inline-block;
+      padding: 16px 48px;
+      background: var(--red);
+      color: var(--white);
+      font-family: 'Anton', sans-serif;
+      font-size: 18px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: background 0.25s, transform 0.2s;
+      -webkit-appearance: none;
+    }
+    .age-btn:hover  { background: var(--gold); color: var(--black); }
+    .age-btn:active { transform: scale(0.97); }
+    .age-gate-note {
+      margin-top: 20px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 0.08em;
+    }
+
+    /* ── MAIN CONTENT ── */
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 24px 80px;
+      opacity: 0;
+      transition: opacity 0.6s ease 0.3s;
+    }
+    .page.visible { opacity: 1; }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 48px;
+    }
+    .logo {
+      width: 140px;
+      height: 140px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 20px rgba(227,28,28,0.3));
+      margin-bottom: 16px;
+    }
+    .tagline {
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gray);
+      text-align: center;
+      max-width: 300px;
+      line-height: 1.8;
+    }
+    .tagline span { color: var(--red); }
+
+    /* ── LINKS ── */
+    .links {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .link-btn {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+      padding: 18px 24px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--white);
+      text-decoration: none;
+      font-family: 'Anton', sans-serif;
+      font-size: 16px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .link-btn:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.2);
+      transform: translateX(4px);
+    }
+    .link-btn:active { transform: translateX(2px) scale(0.99); }
+
+    .link-btn.primary {
+      background: var(--red);
+      border-color: var(--red);
+    }
+    .link-btn.primary:hover {
+      background: #c91616;
+      border-color: #c91616;
+    }
+
+    .link-btn.soon {
+      opacity: 0.35;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .link-icon {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .link-label { flex: 1; }
+
+    .link-arrow {
+      font-size: 14px;
+      color: rgba(255,255,255,0.3);
+      transition: color 0.2s, transform 0.2s;
+    }
+    .link-btn:hover .link-arrow {
+      color: rgba(255,255,255,0.7);
+      transform: translateX(3px);
+    }
+    .link-btn.primary .link-arrow { color: rgba(255,255,255,0.5); }
+
+    .soon-badge {
+      font-size: 8px;
+      letter-spacing: 0.2em;
+      background: rgba(255,255,255,0.1);
+      padding: 3px 8px;
+      color: var(--gray);
+    }
+
+    /* ── DIVIDER ── */
+    .links-divider {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 4px 0;
+    }
+    .links-divider::before,
+    .links-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.06);
+    }
+    .links-divider span {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      margin-top: 56px;
+      text-align: center;
+    }
+    .footer-copy {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+    }
+
+    /* ── MOBILE SAFE AREA ── */
+    @media (max-width: 480px) {
+      .page { padding: 48px 16px 100px; }
+      .link-btn { padding: 16px 18px; }
+    }
+
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
+      .page { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- AGE GATE -->
+  <div class="age-gate" id="ageGate">
+    <img src="https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png" alt="Wild Kindness" class="age-gate-logo">
+    <h2>Adults Only</h2>
+    <p>This page contains links to adult content. You must be 18 or older to continue.</p>
+    <button class="age-btn" onclick="dismiss()">I am 18+</button>
+    <p class="age-gate-note">By entering you confirm you are of legal age</p>
+  </div>
+
+  <!-- MAIN PAGE -->
+  <div class="page" id="mainPage">
+
+    <div class="header">
+      <img src="https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png" alt="Wild Kindness" class="logo">
+      <p class="tagline">Hung. Bubble Butt. Versatile.<br><span>San Francisco Bay Area & Beyond</span></p>
+    </div>
+
+    <div class="links">
+
+      <!-- CALL / TEXT -->
+      <a href="tel:+19258979008" class="link-btn primary">
+        <span class="link-icon">📞</span>
+        <span class="link-label">Call Me</span>
+        <span class="link-arrow">→</span>
+      </a>
+
+      <a href="sms:+19258979008" class="link-btn primary">
+        <span class="link-icon">💬</span>
+        <span class="link-label">Text Me</span>
+        <span class="link-arrow">→</span>
+      </a>
+
+      <div class="links-divider"><span>Content Platforms</span></div>
+
+      <!-- ONLYFANS -->
+      <a href="https://onlyfans.com/wildkindness69" target="_blank" rel="noopener" class="link-btn">
+        <span class="link-icon">🔞</span>
+        <span class="link-label">OnlyFans</span>
+        <span class="link-arrow">→</span>
+      </a>
+
+      <div class="links-divider"><span>Social</span></div>
+
+      <!-- BLUESKY -->
+      <a href="https://bsky.app/profile/wildkindness69.bsky.social" target="_blank" rel="noopener" class="link-btn">
+        <span class="link-icon">🦋</span>
+        <span class="link-label">Bluesky</span>
+        <span class="link-arrow">→</span>
+      </a>
+
+      <!-- X/TWITTER -->
+      <div class="link-btn soon">
+        <span class="link-icon">𝕏</span>
+        <span class="link-label">Twitter / X</span>
+        <span class="soon-badge">Coming Soon</span>
+      </div>
+
+      <div class="links-divider"><span>Messaging</span></div>
+
+      <!-- SIGNAL -->
+      <a href="https://signal.me/#eu/j5o7xP5G6jN6eI9y8lLNLUB-8MszXPiWd9N" target="_blank" rel="noopener" class="link-btn">
+        <span class="link-icon">🔒</span>
+        <span class="link-label">Signal</span>
+        <span class="link-arrow">→</span>
+      </a>
+
+      <!-- WHATSAPP -->
+      <a href="https://wa.me/19258979008" target="_blank" rel="noopener" class="link-btn">
+        <span class="link-icon">💚</span>
+        <span class="link-label">WhatsApp</span>
+        <span class="link-arrow">→</span>
+      </a>
+
+      <!-- TELEGRAM -->
+      <a href="https://t.me/wildkindness69" target="_blank" rel="noopener" class="link-btn">
+        <span class="link-icon">✈️</span>
+        <span class="link-label">Telegram</span>
+        <span class="link-arrow">→</span>
+      </a>
+
+      <div class="links-divider"><span>Web</span></div>
+
+      <!-- WEBSITE -->
+      <a href="https://www.wildkindness69.com" target="_blank" rel="noopener" class="link-btn">
+        <span class="link-icon">🌐</span>
+        <span class="link-label">Website</span>
+        <span class="link-arrow">→</span>
+      </a>
+
+    </div>
+
+    <footer class="footer">
+      <p class="footer-copy">© 2026 Wild Kindness / Tamed Malice LLC</p>
+    </footer>
+
+  </div>
+
+  <script>
+    // Age gate
+    function dismiss() {
+      document.getElementById('ageGate').classList.add('dismissed');
+      document.getElementById('mainPage').classList.add('visible');
+      try { sessionStorage.setItem('wk_age_ok', '1'); } catch(e) {}
+    }
+
+    // Skip gate if already confirmed this session
+    try {
+      if (sessionStorage.getItem('wk_age_ok') === '1') {
+        document.getElementById('ageGate').classList.add('dismissed');
+        document.getElementById('mainPage').style.opacity = '1';
+      }
+    } catch(e) {}
+  </script>
+
+</body>
+</html>
