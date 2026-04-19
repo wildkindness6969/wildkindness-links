@@ -16,6 +16,7 @@
       --ink:   #1a1209;
       --paper: #e8dfc8;
       --red:   #8b1a1a;
+      --glass: rgba(232,223,200,0.78);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body {
@@ -24,13 +25,11 @@
       font-family: 'Space Grotesk', sans-serif;
       overflow-x: hidden;
     }
-
-    /* ── BACKGROUND ── */
     body {
       background-color: var(--paper);
       background-image: url('https://wildkindness-cdn.b-cdn.net/bg-pattern.png');
       background-repeat: repeat;
-      background-size: 320px auto;
+      background-size: 300px auto;
       background-attachment: fixed;
     }
 
@@ -43,26 +42,26 @@
       background-color: var(--paper);
       background-image: url('https://wildkindness-cdn.b-cdn.net/bg-pattern.png');
       background-repeat: repeat;
-      background-size: 320px auto;
+      background-size: 300px auto;
       transition: opacity 0.5s ease, visibility 0.5s ease;
     }
     .age-gate.dismissed { opacity: 0; visibility: hidden; pointer-events: none; }
-
     .age-gate-inner {
       border: 3px double var(--ink);
-      padding: 36px 44px; max-width: 400px;
+      padding: 36px 44px; max-width: 400px; width: 100%;
       position: relative;
-      backdrop-filter: blur(12px);
-      background: rgba(232,223,200,0.82);
+      backdrop-filter: blur(16px) saturate(0.85);
+      -webkit-backdrop-filter: blur(16px) saturate(0.85);
+      background: var(--glass);
     }
     .age-gate-inner::before {
       content: ''; position: absolute; inset: 5px;
-      border: 1px solid rgba(26,18,9,0.4); pointer-events: none;
+      border: 1px solid rgba(26,18,9,0.3); pointer-events: none;
     }
     .age-gate-logo {
       width: 80px; height: 80px; object-fit: contain;
       margin-bottom: 14px;
-      filter: sepia(0.5) contrast(1.1) brightness(0.85);
+      filter: sepia(0.4) contrast(1.1) brightness(0.9);
     }
     .age-gate h2 {
       font-family: 'UnifrakturMaguntia', cursive;
@@ -92,67 +91,52 @@
     /* ── MAIN PAGE ── */
     .page {
       max-width: 520px; margin: 0 auto;
-      padding: 32px 20px 60px;
+      padding: 40px 20px 60px;
       opacity: 0; transition: opacity 0.6s ease 0.2s;
+      display: flex; flex-direction: column; gap: 10px;
     }
     .page.visible { opacity: 1; }
 
-    /* ── MASTHEAD ── */
-    .masthead {
-      text-align: center;
-      padding-bottom: 8px;
-      margin-bottom: 12px;
-      border-bottom: 3px double var(--ink);
+    /* ── HEADER CARD (frosted, no dividers) ── */
+    .header-card {
+      backdrop-filter: blur(16px) saturate(0.85);
+      -webkit-backdrop-filter: blur(16px) saturate(0.85);
+      background: var(--glass);
+      border: 1.5px solid rgba(26,18,9,0.3);
+      padding: 24px 20px 20px;
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center; position: relative;
     }
-    .masthead-date {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 8px; letter-spacing: 0.22em;
-      text-transform: uppercase; opacity: 0.45; margin-bottom: 4px;
-    }
-    .masthead-title {
-      font-family: 'UnifrakturMaguntia', cursive;
-      font-size: clamp(38px, 11vw, 68px);
-      line-height: 1; color: var(--ink);
-    }
-    .masthead-rule {
-      display: flex; align-items: center; gap: 8px; margin: 5px 0;
-    }
-    .masthead-rule::before, .masthead-rule::after {
-      content: ''; flex: 1; height: 1px; background: var(--ink);
-    }
-    .masthead-rule span {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 8px; letter-spacing: 0.22em;
-      text-transform: uppercase; opacity: 0.55; white-space: nowrap;
-    }
-    .masthead-sub {
-      font-family: 'Space Grotesk', sans-serif; font-style: italic;
-      font-size: clamp(9px, 2vw, 11px); opacity: 0.55; letter-spacing: 0.06em;
+    .header-card::after {
+      content: ''; position: absolute; inset: 4px;
+      border: 0.5px solid rgba(26,18,9,0.12); pointer-events: none;
     }
 
     /* ── LOGO ── */
-    .logo-block { display: flex; justify-content: center; margin: 10px 0 6px; }
     .logo-wrapper {
-      position: relative; width: 100px; height: 100px;
+      position: relative;
+      width: 50%; /* 50% of the card = ~50% of links box width */
+      aspect-ratio: 1;
       display: flex; align-items: center; justify-content: center;
+      margin-bottom: 12px;
     }
     .logo-glow {
       position: absolute; inset: -14px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(139,26,26,0.25) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(139,26,26,0.3) 0%, transparent 70%);
       animation: heartGlow 3.2s ease-in-out infinite;
     }
     @keyframes heartGlow {
       0%   { opacity: 0.2; transform: scale(0.98); }
-      7%   { opacity: 0.6; transform: scale(1.05); }
+      7%   { opacity: 0.65; transform: scale(1.06); }
       14%  { opacity: 0.2; transform: scale(1.0);  }
-      21%  { opacity: 0.5; transform: scale(1.03); }
+      21%  { opacity: 0.5; transform: scale(1.04); }
       35%  { opacity: 0.2; transform: scale(0.98); }
       100% { opacity: 0.2; transform: scale(0.98); }
     }
     .logo {
-      width: 100px; height: 100px; object-fit: contain;
+      width: 100%; height: 100%; object-fit: contain;
       position: relative; z-index: 2;
-      filter: sepia(0.4) contrast(1.1) brightness(0.9);
+      filter: sepia(0.3) contrast(1.1) brightness(0.9);
       animation: heartbeat 3.2s ease-in-out infinite;
       transform-origin: center center;
     }
@@ -165,30 +149,42 @@
       100% { transform: scale(1);    }
     }
 
-    /* ── AD BODY ── */
-    .ad-body {
-      font-family: 'Space Grotesk', sans-serif; font-style: italic;
-      font-size: clamp(10px, 2.5vw, 12px); line-height: 1.5;
-      opacity: 0.6; text-align: center; margin: 4px 0 10px;
-      letter-spacing: 0.04em;
+    /* ── MASTHEAD TEXT ── */
+    .masthead-title {
+      font-family: 'UnifrakturMaguntia', cursive;
+      font-size: clamp(36px, 10vw, 58px);
+      line-height: 1; color: var(--ink);
+      margin-bottom: 6px;
+    }
+    .masthead-tag {
+      font-family: 'Anton', sans-serif;
+      font-size: clamp(11px, 2.8vw, 14px);
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--ink); opacity: 0.7; line-height: 1.5;
+    }
+    .masthead-sub {
+      font-family: 'Space Grotesk', sans-serif;
+      font-style: italic;
+      font-size: clamp(9px, 2vw, 11px);
+      opacity: 0.5; letter-spacing: 0.06em; margin-top: 2px;
     }
 
-    /* ── LINKS — single frosted box, no dividers ── */
+    /* ── LINKS BOX ── */
     .links-box {
-      backdrop-filter: blur(14px) saturate(0.8);
-      -webkit-backdrop-filter: blur(14px) saturate(0.8);
-      background: rgba(232,223,200,0.72);
-      border: 1.5px solid rgba(26,18,9,0.35);
+      backdrop-filter: blur(16px) saturate(0.85);
+      -webkit-backdrop-filter: blur(16px) saturate(0.85);
+      background: var(--glass);
+      border: 1.5px solid rgba(26,18,9,0.3);
       position: relative;
     }
     .links-box::after {
-      content: ''; position: absolute; inset: 3px;
-      border: 0.5px solid rgba(26,18,9,0.15); pointer-events: none;
+      content: ''; position: absolute; inset: 4px;
+      border: 0.5px solid rgba(26,18,9,0.12); pointer-events: none;
     }
 
     .link-btn {
       display: flex; align-items: center; gap: 12px;
-      width: 100%; padding: 10px 16px;
+      width: 100%; padding: 11px 16px;
       border-bottom: 1px solid rgba(26,18,9,0.1);
       color: var(--ink); text-decoration: none;
       font-family: 'Anton', sans-serif;
@@ -201,18 +197,13 @@
 
     .link-icon {
       width: 26px; height: 26px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center; opacity: 0.65;
+      display: flex; align-items: center; justify-content: center; opacity: 0.6;
     }
     .link-icon svg { width: 17px; height: 17px; fill: var(--ink); }
     .link-icon.emoji { font-size: 15px; filter: grayscale(1) sepia(0.4) brightness(0.4); }
-
     .link-label { flex: 1; }
-    .link-arrow {
-      font-size: 11px; opacity: 0.25;
-      transition: opacity 0.2s, transform 0.2s;
-    }
+    .link-arrow { font-size: 11px; opacity: 0.25; transition: opacity 0.2s, transform 0.2s; }
     .link-btn:hover .link-arrow { opacity: 0.6; transform: translateX(3px); }
-
     .soon-badge {
       font-size: 7px; letter-spacing: 0.15em; text-transform: uppercase;
       opacity: 0.35; font-family: 'Space Grotesk', sans-serif;
@@ -221,8 +212,7 @@
 
     /* ── COLOPHON ── */
     .colophon {
-      margin-top: 14px; border-top: 3px double var(--ink);
-      padding-top: 8px; text-align: center;
+      text-align: center; padding-top: 4px;
     }
     .colophon p {
       font-family: 'Space Grotesk', sans-serif;
@@ -231,7 +221,7 @@
     }
 
     @media (max-width: 480px) {
-      .page { padding: 20px 14px 60px; }
+      .page { padding: 24px 14px 60px; }
     }
     @supports (padding-bottom: env(safe-area-inset-bottom)) {
       .page { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
@@ -252,22 +242,18 @@
 
   <div class="page" id="mainPage">
 
-    <header class="masthead">
-      <p class="masthead-date">San Francisco Bay Area &nbsp;&middot;&nbsp; Est. 2024 &nbsp;&middot;&nbsp; Classifieds</p>
-      <h1 class="masthead-title">Wild Kindness</h1>
-      <div class="masthead-rule"><span>Hung &middot; Bubble Butt &middot; Versatile</span></div>
-      <p class="masthead-sub">Content Creator &amp; Model &mdash; Bay Area &amp; Beyond</p>
-    </header>
-
-    <div class="logo-block">
+    <!-- HEADER CARD -->
+    <div class="header-card">
       <div class="logo-wrapper">
         <div class="logo-glow"></div>
         <img src="https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png" alt="Wild Kindness" class="logo">
       </div>
+      <h1 class="masthead-title">Wild Kindness</h1>
+      <p class="masthead-tag">Hung. Bubble Butt.</p>
+      <p class="masthead-sub">Serving SF Bay Area &amp; Beyond</p>
     </div>
 
-    <p class="ad-body">Sweet or salty. Hard or soft. Wild or kind. A one of a kind experience.</p>
-
+    <!-- LINKS BOX -->
     <div class="links-box">
 
       <a href="tel:+19258979008" class="link-btn">
