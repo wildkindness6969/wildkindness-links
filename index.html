@@ -156,7 +156,8 @@
       wax:    rnd(20, 90),
       way:    rnd(15, 55),
       baseR:  rnd(20, 90),
-      trail:  []
+      trail:  [],
+      seed:   Math.random() * 1000
     };
   }
 
@@ -168,46 +169,76 @@
     return { x: cx + (b.ox + wx) * scale, y: cy + (b.oy + wy) * scale, s: scale };
   }
 
-  function splatBlob(x, y, r) {
-    // Main organic blob shape on paint canvas
-    pctx.save();
+  function splatBlob(x, y, r, seed) {
     pctx.fillStyle = 'white';
+
+    // Main splat — lumpy hard-edged polygon, no circles
     pctx.beginPath();
-    var pts = 10 + Math.floor(Math.random() * 8);
+    var pts = 12 + Math.floor(Math.random() * 8);
     for (var i = 0; i <= pts; i++) {
-      var a = (i / pts) * Math.PI * 2;
-      var jit = rnd(0.5, 1.4);
-      var rx = x + Math.cos(a) * r * jit;
-      var ry = y + Math.sin(a) * r * jit * rnd(0.55, 1.1);
+      var angle = (i / pts) * Math.PI * 2;
+      var s     = Math.sin(seed * 7.3 + i * 53.1) * 0.5 + 0.5;
+      var jit   = 0.45 + s * 0.85;
+      var rx    = x + Math.cos(angle) * r * jit;
+      var ry    = y + Math.sin(angle) * r * jit * rnd(0.5, 1.1);
       i === 0 ? pctx.moveTo(rx, ry) : pctx.lineTo(rx, ry);
     }
     pctx.closePath();
     pctx.fill();
-    pctx.restore();
 
-    // Satellite droplets
-    var count = 10 + Math.floor(Math.random() * 18);
+    // Hard satellite blobs — irregular sizes and positions
+    var count = 12 + Math.floor(Math.random() * 20);
     for (var j = 0; j < count; j++) {
       var angle = Math.random() * Math.PI * 2;
-      var dist  = Math.random() < 0.4 ? rnd(r * 0.2, r * 0.8) : rnd(r * 0.9, r * 3.2);
-      var sr    = rnd(3, r * 0.45);
+      var dist  = Math.random() < 0.35 ? rnd(r * 0.1, r * 0.7) : rnd(r * 0.8, r * 3.5);
+      var sr    = rnd(2, r * 0.4);
       var sx    = x + Math.cos(angle) * dist;
       var sy    = y + Math.sin(angle) * dist;
+      // Hard dot — no alpha variation, just solid white
       pctx.beginPath();
       pctx.arc(sx, sy, sr, 0, Math.PI * 2);
-      pctx.fillStyle = 'rgba(255,255,255,' + rnd(0.6, 1) + ')';
       pctx.fill();
-      // Some become drips
-      if (Math.random() < 0.25 && sy < H * 0.9) {
-        drips.push(makeDrip(sx, sy, sr * rnd(0.5, 1.0)));
+
+      // Some dots get a mini drip below them
+      if (Math.random() < 0.3 && sy < H * 0.88) {
+        drips.push(makeDrip(sx, sy, sr * rnd(0.4, 0.9)));
       }
     }
 
-    // Drip strings from impact
-    for (var k = 0; k < 4 + Math.floor(Math.random() * 5); k++) {
-      var da = rnd(Math.PI * 0.1, Math.PI * 0.9); // mostly downward
-      var dd = rnd(r * 0.1, r * 0.7);
-      drips.push(makeDrip(x + Math.cos(da) * dd, y + Math.sin(da) * dd, rnd(4, 16)));
+    // Drip strings — downward only like gravity paint
+    var dripCount = 4 + Math.floor(Math.random() * 6);
+    for (var k = 0; k < dripCount; k++) {
+      var angle = rnd(Math.PI * 0.05, Math.PI * 0.95); // downward arc
+      var dist  = rnd(r * 0.05, r * 0.6);
+      drips.push(makeDrip(
+        x + Math.cos(angle) * dist,
+        y + Math.sin(angle) * dist,
+        rnd(5, 18)
+      ));
+    }
+
+    // Stringy paint lines radiating out
+    var lines = 3 + Math.floor(Math.random() * 5);
+    for (var l = 0; l < lines; l++) {
+      var angle = Math.random() * Math.PI * 2;
+      var len   = rnd(r * 0.3, r * 2.2);
+      var thick = rnd(2, r * 0.18);
+      pctx.beginPath();
+      pctx.moveTo(x, y);
+      // Wobbly line
+      var mx = x + Math.cos(angle) * len * 0.5 + rnd(-r*0.2, r*0.2);
+      var my = y + Math.sin(angle) * len * 0.5 + rnd(-r*0.2, r*0.2);
+      var ex = x + Math.cos(angle) * len;
+      var ey = y + Math.sin(angle) * len;
+      pctx.quadraticCurveTo(mx, my, ex, ey);
+      pctx.strokeStyle = 'white';
+      pctx.lineWidth   = thick;
+      pctx.lineCap     = 'round';
+      pctx.stroke();
+      // Hard bead at end
+      pctx.beginPath();
+      pctx.arc(ex, ey, thick * rnd(1.2, 2.2), 0, Math.PI * 2);
+      pctx.fill();
     }
   }
 
@@ -236,37 +267,85 @@
     if (d.y > H + 30) d.done = true;
   }
 
+  // Draw a sharp teardrop paint blob — stretched along travel direction
+  function paintDrop(cx2, cy2, R, stretch, seed) {
+    // Use seeded-ish jitter for consistent per-blob shape
+    ctx.fillStyle = 'white';
+    ctx.beginPath();
+    var pts = 9;
+    // Lumpy irregular polygon — like a paint glob, no smooth edges
+    var jitters = [];
+    for (var i = 0; i < pts; i++) {
+      // Pseudo-random per point, deterministic per blob via seed
+      var s = Math.sin(seed * 13.7 + i * 97.3) * 0.5 + 0.5;
+      jitters.push(0.55 + s * 0.65);
+    }
+    for (var i = 0; i <= pts; i++) {
+      var angle = (i / pts) * Math.PI * 2 - Math.PI / 2;
+      // Heavier at back (top), pointy at front (bottom) — teardrop
+      var tearFactor = 1 + stretch * (Math.cos(angle + Math.PI / 2) * 0.5 + 0.5) * 1.8;
+      var jit = jitters[i % pts];
+      var rx = cx2 + Math.cos(angle) * R * jit * tearFactor * 0.7;
+      var ry = cy2 + Math.sin(angle) * R * jit * tearFactor;
+      i === 0 ? ctx.moveTo(rx, ry) : ctx.lineTo(rx, ry);
+    }
+    ctx.closePath();
+    ctx.fill();
+
+    // Stringy drip tail — thin line dangling below
+    var tailLen = R * (0.8 + stretch * 1.2);
+    ctx.beginPath();
+    ctx.moveTo(cx2, cy2 + R * 0.9);
+    ctx.bezierCurveTo(
+      cx2 + rnd(-R*0.3, R*0.3), cy2 + R + tailLen * 0.3,
+      cx2 + rnd(-R*0.2, R*0.2), cy2 + R + tailLen * 0.7,
+      cx2 + rnd(-R*0.15, R*0.15), cy2 + R + tailLen
+    );
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth   = Math.max(2, R * 0.35);
+    ctx.lineCap     = 'round';
+    ctx.stroke();
+    // Teardrop bead at end of drip
+    ctx.beginPath();
+    ctx.arc(cx2 + rnd(-R*0.1, R*0.1), cy2 + R + tailLen, R * 0.22, 0, Math.PI * 2);
+    ctx.fillStyle = 'white';
+    ctx.fill();
+  }
+
   function drawBlob(b) {
     if (!b.born || b.hit) return;
     var p = blobPos(b);
     var R = b.baseR * p.s;
+    var stretch = b.z * 1.4; // more stretched the faster it's moving
 
-    // Trail
-    for (var i = 1; i < b.trail.length; i++) {
-      var tp = b.trail[i], pp = b.trail[i - 1];
-      var a  = (i / b.trail.length) * 0.65;
-      var tr = R * (i / b.trail.length) * 0.8;
+    // Paint streak trail — thick hard-edged line, no feathering
+    if (b.trail.length > 2) {
       ctx.beginPath();
-      ctx.moveTo(pp.x, pp.y); ctx.lineTo(tp.x, tp.y);
-      ctx.strokeStyle = 'rgba(255,255,255,' + a + ')';
-      ctx.lineWidth   = Math.max(2, tr * 1.6);
+      ctx.moveTo(b.trail[0].x, b.trail[0].y);
+      for (var i = 1; i < b.trail.length; i++) {
+        ctx.lineTo(b.trail[i].x, b.trail[i].y);
+      }
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth   = Math.max(3, R * 1.1);
       ctx.lineCap     = 'round';
+      ctx.lineJoin    = 'round';
       ctx.stroke();
+
+      // Irregular blobs along the trail
+      for (var i = 0; i < b.trail.length; i += 3) {
+        if (Math.random() < 0.5) {
+          var tr = b.trail[i];
+          var br = R * (i / b.trail.length) * 0.6;
+          ctx.beginPath();
+          ctx.arc(tr.x + rnd(-br*0.5, br*0.5), tr.y + rnd(-br*0.3, br*0.3), br * rnd(0.5, 1.1), 0, Math.PI * 2);
+          ctx.fillStyle = 'white';
+          ctx.fill();
+        }
+      }
     }
 
-    // Blob
-    ctx.save();
-    ctx.translate(p.x, p.y);
-    ctx.scale(1 + b.z * 0.5, 1);
-    var g = ctx.createRadialGradient(0, 0, 0, 0, 0, R * 1.3);
-    g.addColorStop(0,   'rgba(255,255,255,1)');
-    g.addColorStop(0.65,'rgba(255,255,255,0.85)');
-    g.addColorStop(1,   'rgba(255,255,255,0)');
-    ctx.beginPath();
-    ctx.arc(0, 0, R * 1.3, 0, Math.PI * 2);
-    ctx.fillStyle = g;
-    ctx.fill();
-    ctx.restore();
+    // Main paint drop
+    paintDrop(p.x, p.y, R, stretch, b.seed);
   }
 
   // ── Logo ──
@@ -314,8 +393,6 @@
       0, 0
     );
     ctx.rotate(lg.rz);
-    ctx.shadowColor = 'rgba(0,0,0,0.45)';
-    ctx.shadowBlur  = 28 * scale;
     ctx.drawImage(logoImg, -size/2, -size/2, size, size);
     ctx.restore();
   }
@@ -350,7 +427,7 @@
           if (b.trail.length > 22) b.trail.shift();
           if (b.z >= 1) {
             b.hit = true;
-            splatBlob(p.x, p.y, b.baseR * p.s);
+            splatBlob(p.x, p.y, b.baseR * p.s, b.seed);
           } else {
             allHit = false;
           }
