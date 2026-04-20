@@ -3,200 +3,348 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="Wild Kindness — Hung. Bubble Butt. Versatile. San Francisco Bay Area & Beyond.">
+  <meta name="description" content="Wild Kindness — Hung. Bubble Butt. Squirter. San Francisco Bay Area & Beyond.">
   <meta property="og:title" content="Wild Kindness">
   <meta property="og:image" content="https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png">
   <title>Wild Kindness</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Anton&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
-    :root { --ink:#1a1209; --paper:#e8dfc8; --red:#8b1a1a; --glass:rgba(232,223,200,0.82); }
-    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-    html,body { min-height:100%; color:var(--ink); font-family:'Space Grotesk',sans-serif; overflow-x:hidden; }
-    body {
-      background-color:#d4c9a8;
-      background-image:url('https://wildkindness-cdn.b-cdn.net/bg-bathroom.png');
-      background-repeat:repeat;
-      background-size:600px auto;
-      background-attachment:fixed;
+    :root {
+      --black: #0A0A0A;
+      --white: #FFFFFF;
+      --gray:  #888888;
+      --red:   #E31C1C;
+      --gold:  #F5C518;
     }
 
-    /* ── NSFW AGE GATE MODAL ── */
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html, body { min-height:100%; color:var(--white); font-family:'Space Grotesk',sans-serif; overflow-x:hidden; }
+
+    body {
+      background-color: var(--black);
+      background-image: url('https://wildkindness-cdn.b-cdn.net/bg-bathroom.png');
+      background-repeat: repeat;
+      background-size: 520px auto;
+      background-attachment: fixed;
+    }
+
+    /* Dark tint over busy background so content stays readable */
+    body::before {
+      content:'';
+      position:fixed; inset:0; z-index:0;
+      background: rgba(10,10,10,0.55);
+      pointer-events:none;
+    }
+
+    /* ── NSFW GATE MODAL ── */
     .gate-overlay {
       position:fixed; inset:0; z-index:9999;
-      background:rgba(10,8,4,0.75);
+      background:rgba(10,10,10,0.85);
       display:flex; align-items:center; justify-content:center;
       padding:24px;
       opacity:0; visibility:hidden;
       transition:opacity 0.3s ease, visibility 0.3s ease;
-      backdrop-filter:blur(4px);
-      -webkit-backdrop-filter:blur(4px);
     }
     .gate-overlay.active { opacity:1; visibility:visible; }
     .gate-box {
-      border:3px double var(--ink);
-      padding:32px 36px; max-width:360px; width:100%;
-      position:relative;
-      background:var(--glass);
+      background: var(--black);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding:36px 32px; max-width:360px; width:100%;
+      text-align:center; position:relative;
+    }
+    .gate-box::before {
+      content:'';
+      position:absolute; inset:0;
+      border-left:3px solid var(--red);
+      pointer-events:none;
+    }
+    .gate-box h2 {
+      font-family:'Anton',sans-serif;
+      font-size:clamp(22px,6vw,28px);
+      text-transform:uppercase; letter-spacing:0.05em;
+      margin-bottom:10px;
+    }
+    .gate-box p {
+      font-size:12px; color:var(--gray);
+      letter-spacing:0.06em; line-height:1.7;
+      margin-bottom:28px;
+    }
+    .gate-btns { display:flex; gap:10px; justify-content:center; }
+    .gate-btn {
+      padding:14px 28px;
+      font-family:'Anton',sans-serif; font-size:13px;
+      letter-spacing:0.12em; text-transform:uppercase;
+      cursor:pointer; transition:all 0.25s; -webkit-appearance:none;
+      border:none;
+    }
+    .gate-btn.yes { background:var(--red); color:var(--white); }
+    .gate-btn.yes:hover { background:var(--gold); color:var(--black); }
+    .gate-btn.no { background:transparent; color:var(--gray); border:1px solid rgba(255,255,255,0.15); }
+    .gate-btn.no:hover { border-color:rgba(255,255,255,0.4); color:var(--white); }
+    .gate-note { margin-top:16px; font-size:9px; color:var(--gray); letter-spacing:0.1em; text-transform:uppercase; opacity:0.5; }
+
+    /* ── PAGE LAYOUT ── */
+    .page {
+      position:relative; z-index:1;
+      max-width:480px; margin:0 auto;
+      padding:48px 20px 80px;
+      display:flex; flex-direction:column; gap:0;
+    }
+
+    /* ── BLIND WRAPS — invisible, just handle clip reveal ── */
+    .blind-wrap {
+      position:relative; overflow:hidden;
+    }
+
+    /* ── LOGO SECTION ── */
+    .logo-section {
+      display:flex; flex-direction:column; align-items:center;
+      padding-bottom:32px;
       text-align:center;
     }
-    .gate-box::before { content:''; position:absolute; inset:5px; border:1px solid rgba(26,18,9,0.3); pointer-events:none; }
-    .gate-box h2 { font-family:'UnifrakturMaguntia',cursive; font-size:clamp(22px,6vw,30px); margin-bottom:8px; color:var(--ink); }
-    .gate-box p { font-family:'Space Grotesk',sans-serif; font-size:11px; color:var(--ink); letter-spacing:0.06em; line-height:1.6; margin-bottom:24px; opacity:0.7; }
-    .gate-btns { display:flex; gap:10px; justify-content:center; }
-    .gate-btn { padding:10px 28px; font-family:'Anton',sans-serif; font-size:13px; letter-spacing:0.12em; text-transform:uppercase; cursor:pointer; border:2px solid var(--ink); transition:background 0.2s, color 0.2s; -webkit-appearance:none; }
-    .gate-btn.yes { background:var(--ink); color:var(--paper); }
-    .gate-btn.yes:hover { background:var(--red); border-color:var(--red); }
-    .gate-btn.no { background:transparent; color:var(--ink); }
-    .gate-btn.no:hover { background:rgba(26,18,9,0.08); }
-    .gate-note { margin-top:14px; font-family:'Space Grotesk',sans-serif; font-size:9px; letter-spacing:0.1em; opacity:0.35; text-transform:uppercase; }
+    .logo-img {
+      width: clamp(120px, 40vw, 180px);
+      height: clamp(120px, 40vw, 180px);
+      object-fit:contain;
+      filter: drop-shadow(0 0 24px rgba(227,28,28,0.25));
+      margin-bottom:16px;
+    }
+    .logo-name {
+      font-family:'Anton',sans-serif;
+      font-size:clamp(28px, 8vw, 42px);
+      text-transform:uppercase;
+      letter-spacing:0.04em;
+      line-height:1;
+      margin-bottom:8px;
+      /* Subtle gradient matching main site */
+      background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,0.85) 100%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .logo-tag {
+      font-size:10px;
+      font-weight:500;
+      letter-spacing:0.28em;
+      text-transform:uppercase;
+      color:var(--gray);
+      line-height:1.8;
+    }
+    .logo-tag .accent { color:var(--red); }
 
-    /* ── MAIN PAGE ── */
-    .page {
-      max-width:520px; margin:0 auto;
-      padding:40px 20px 60px;
-      display:flex; flex-direction:column; gap:10px;
+    /* Horizontal rule matching main site style */
+    .divider {
+      width:100%; height:1px;
+      background:linear-gradient(to right, transparent, rgba(255,255,255,0.12), transparent);
+      margin-bottom:0;
     }
 
-    /* ── ROLLER BLIND WRAPS ── */
-    .blind-wrap { position:relative; overflow:hidden; }
-    .blind-tube {
-      position:absolute; top:0; left:0; right:0; height:10px;
-      background:linear-gradient(180deg,#2a1f0a 0%,#4a3820 40%,#2a1f0a 100%);
-      border-radius:0 0 3px 3px; z-index:10;
-      box-shadow:0 3px 8px rgba(0,0,0,0.5);
-    }
-    .blind-hem {
-      position:absolute; bottom:0; left:0; right:0; height:8px;
-      background:linear-gradient(180deg,#3a2a10 0%,#5a4020 50%,#3a2a10 100%);
-      border-radius:2px 2px 0 0; z-index:10;
-      box-shadow:0 -2px 6px rgba(0,0,0,0.4);
+    /* ── LINKS SECTION ── */
+    .links-section {
+      display:flex; flex-direction:column;
     }
 
-    /* ── HEADER CARD ── */
-    .header-card {
-      backdrop-filter:blur(16px) saturate(0.85); -webkit-backdrop-filter:blur(16px) saturate(0.85);
-      background:var(--glass); border:1.5px solid rgba(26,18,9,0.3);
-      padding:24px 20px 20px; display:flex; flex-direction:column; align-items:center; text-align:center; position:relative;
-    }
-    .header-card::after { content:''; position:absolute; inset:4px; border:0.5px solid rgba(26,18,9,0.12); pointer-events:none; }
-    .logo-wrapper { position:relative; width:50%; aspect-ratio:1; display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
-    .logo { width:100%; height:100%; object-fit:contain; position:relative; z-index:2; filter:sepia(0.2) contrast(1.05) brightness(0.95); }
-    .masthead-tag { font-family:'Anton',sans-serif; font-size:clamp(11px,2.8vw,14px); letter-spacing:0.1em; text-transform:uppercase; color:var(--ink); opacity:0.7; line-height:1.5; }
-    .masthead-sub { font-family:'Space Grotesk',sans-serif; font-style:italic; font-size:clamp(9px,2vw,11px); opacity:0.5; letter-spacing:0.06em; margin-top:2px; }
-
-    /* ── LINKS BOX ── */
-    .links-box { backdrop-filter:blur(16px) saturate(0.85); -webkit-backdrop-filter:blur(16px) saturate(0.85); background:var(--glass); border:1.5px solid rgba(26,18,9,0.3); position:relative; }
-    .links-box::after { content:''; position:absolute; inset:4px; border:0.5px solid rgba(26,18,9,0.12); pointer-events:none; }
-    .link-btn {
-      display:flex; align-items:center; gap:12px;
-      width:100%; padding:11px 16px;
-      border-bottom:1px solid rgba(26,18,9,0.1);
-      color:var(--ink); text-decoration:none;
-      font-family:'Anton',sans-serif; font-size:14px; letter-spacing:0.08em; text-transform:uppercase;
-      transition:background 0.15s, padding-left 0.15s;
-      cursor:pointer; position:relative; z-index:1; background:none; border-top:none; border-left:none; border-right:none;
+    /* Each link row — matches main site nav/CTA feel */
+    .link-row {
+      display:flex;
+      align-items:center;
+      gap:14px;
+      width:100%;
+      padding:15px 0;
+      border-bottom:1px solid rgba(255,255,255,0.06);
+      color:var(--white);
+      text-decoration:none;
+      font-family:'Space Grotesk',sans-serif;
+      font-size:13px;
+      font-weight:500;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      transition:all 0.25s ease;
+      cursor:pointer;
+      background:none; border-left:none; border-right:none; border-top:none;
       text-align:left;
+      position:relative;
     }
-    .link-btn:last-child { border-bottom:none; }
-    .link-btn:hover { background:rgba(26,18,9,0.07); padding-left:22px; }
-    .link-icon { width:26px; height:26px; flex-shrink:0; display:flex; align-items:center; justify-content:center; opacity:0.6; }
-    .link-icon svg { width:17px; height:17px; fill:var(--ink); }
-    .link-icon.emoji { font-size:15px; filter:grayscale(1) sepia(0.4) brightness(0.4); }
-    .link-label { flex:1; }
-    .link-arrow { font-size:11px; opacity:0.25; transition:opacity 0.2s,transform 0.2s; }
-    .link-btn:hover .link-arrow { opacity:0.6; transform:translateX(3px); }
-    .soon-badge { font-size:7px; letter-spacing:0.15em; text-transform:uppercase; opacity:0.35; font-family:'Space Grotesk',sans-serif; border:1px solid var(--ink); padding:2px 5px; }
+    .link-row:last-child { border-bottom:none; }
 
-    .colophon { text-align:center; padding-top:4px; }
-    .colophon p { font-family:'Space Grotesk',sans-serif; font-size:8px; letter-spacing:0.15em; text-transform:uppercase; opacity:0.3; }
+    /* Red left-border accent on hover — matches main site hover pattern */
+    .link-row::before {
+      content:'';
+      position:absolute; left:-20px; top:0; bottom:0;
+      width:3px; background:var(--red);
+      transform:scaleY(0); transform-origin:center;
+      transition:transform 0.2s ease;
+    }
+    .link-row:hover { color:var(--white); padding-left:8px; }
+    .link-row:hover::before { transform:scaleY(1); }
 
-    @media (max-width:480px) { .page { padding:24px 14px 60px; } }
-    @supports (padding-bottom:env(safe-area-inset-bottom)) { .page { padding-bottom:calc(60px + env(safe-area-inset-bottom)); } }
+    .link-row:hover .row-label { color:var(--white); }
+    .link-row:hover .row-arrow { color:var(--red); transform:translateX(4px); }
+
+    .row-icon {
+      width:32px; height:32px; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      color:var(--gray);
+      transition:color 0.2s;
+    }
+    .row-icon svg { width:18px; height:18px; fill:currentColor; }
+    .row-icon.emoji { font-size:17px; filter:grayscale(1) brightness(1.2); }
+    .link-row:hover .row-icon { color:var(--white); }
+
+    .row-label { flex:1; color:var(--gray); transition:color 0.2s; }
+    .row-arrow {
+      font-size:16px; color:rgba(255,255,255,0.2);
+      transition:color 0.2s, transform 0.2s;
+    }
+
+    /* Primary CTA rows (Call/Text) — red accent */
+    .link-row.primary .row-label { color:var(--white); }
+    .link-row.primary .row-icon  { color:var(--red); }
+    .link-row.primary .row-arrow { color:rgba(227,28,28,0.5); }
+    .link-row.primary:hover .row-icon { color:var(--gold); }
+    .link-row.primary:hover .row-arrow { color:var(--gold); }
+
+    .soon-tag {
+      font-size:8px; letter-spacing:0.2em; text-transform:uppercase;
+      color:var(--gray); border:1px solid rgba(255,255,255,0.12);
+      padding:3px 8px; opacity:0.5;
+    }
+
+    /* ── FOOTER ── */
+    .site-footer {
+      margin-top:40px; padding-top:20px;
+      border-top:1px solid rgba(255,255,255,0.08);
+      text-align:center;
+      display:flex; flex-direction:column; align-items:center; gap:8px;
+    }
+    .footer-logo {
+      width:36px; height:36px; object-fit:contain;
+      opacity:0.4; filter:grayscale(1);
+    }
+    .footer-copy {
+      font-size:9px; letter-spacing:0.18em;
+      text-transform:uppercase; color:var(--gray); opacity:0.35;
+    }
+
+    @media (max-width:480px) { .page { padding:32px 16px 80px; } }
+    @supports (padding-bottom:env(safe-area-inset-bottom)) {
+      .page { padding-bottom:calc(80px + env(safe-area-inset-bottom)); }
+    }
   </style>
 </head>
 <body>
 
-<!-- NSFW AGE GATE MODAL -->
+<!-- NSFW GATE -->
 <div class="gate-overlay" id="gateOverlay">
   <div class="gate-box">
     <h2>Adults Only</h2>
-    <p>This link goes to an adult content platform.<br>You must be 18 or older to continue.</p>
+    <p>This link leads to an adult content platform.<br>You must be 18 or older to continue.</p>
     <div class="gate-btns">
-      <button class="gate-btn yes" id="gateYes">I'm 18+ &mdash; Go</button>
+      <button class="gate-btn yes" id="gateYes">I'm 18+ &mdash; Continue</button>
       <button class="gate-btn no" onclick="closeGate()">Go Back</button>
     </div>
     <p class="gate-note">By continuing you confirm you are of legal age</p>
   </div>
 </div>
 
+<!-- PAGE -->
 <div class="page" id="mainPage">
 
+  <!-- LOGO SECTION -->
   <div class="blind-wrap" id="blind0">
-    <div class="blind-tube"></div>
-    <div class="header-card">
-      <div class="logo-wrapper">
-        <img src="https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png" alt="Wild Kindness" class="logo">
-      </div>
-      <p class="masthead-tag">Hung. Bubble Butt. Squirter.</p>
-      <p class="masthead-sub">Serving SF Bay Area &amp; Beyond</p>
+    <div class="logo-section">
+      <img src="https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png" alt="Wild Kindness" class="logo-img">
+      <h1 class="logo-name">Wild Kindness</h1>
+      <p class="logo-tag">
+        Hung &nbsp;·&nbsp; Bubble Butt &nbsp;·&nbsp; Squirter<br>
+        <span class="accent">Serving SF Bay Area &amp; Beyond</span>
+      </p>
     </div>
-    <div class="blind-hem"></div>
+    <div class="divider"></div>
   </div>
 
+  <!-- LINKS -->
   <div class="blind-wrap" id="blind1">
-    <div class="blind-tube"></div>
-    <div class="links-box">
+    <div class="links-section">
 
-      <!-- Safe links — no gate -->
-      <a href="tel:+19258979008" class="link-btn">
-        <span class="link-icon emoji">📞</span><span class="link-label">Call Me</span><span class="link-arrow">&#8594;</span>
-      </a>
-      <a href="sms:+19258979008" class="link-btn">
-        <span class="link-icon emoji">💬</span><span class="link-label">Text Me</span><span class="link-arrow">&#8594;</span>
+      <a href="tel:+19258979008" class="link-row primary">
+        <span class="row-icon emoji">📞</span>
+        <span class="row-label">Call Me</span>
+        <span class="row-arrow">→</span>
       </a>
 
-      <!-- NSFW links — trigger gate -->
-      <button class="link-btn" onclick="gateLink('https://onlyfans.com/wildkindness69')">
-        <span class="link-icon"><svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 4.5c4.142 0 7.5 3.358 7.5 7.5s-3.358 7.5-7.5 7.5S4.5 16.142 4.5 12 7.858 4.5 12 4.5zm0 2.25A5.25 5.25 0 1 0 17.25 12 5.257 5.257 0 0 0 12 6.75zm0 2.25A3 3 0 1 1 9 12a3 3 0 0 1 3-3z"/></svg></span>
-        <span class="link-label">OnlyFans</span><span class="link-arrow">&#8594;</span>
+      <a href="sms:+19258979008" class="link-row primary">
+        <span class="row-icon emoji">💬</span>
+        <span class="row-label">Text Me</span>
+        <span class="row-arrow">→</span>
+      </a>
+
+      <button class="link-row" onclick="gateLink('https://onlyfans.com/wildkindness69')">
+        <span class="row-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 4.5c4.142 0 7.5 3.358 7.5 7.5s-3.358 7.5-7.5 7.5S4.5 16.142 4.5 12 7.858 4.5 12 4.5zm0 2.25A5.25 5.25 0 1 0 17.25 12 5.257 5.257 0 0 0 12 6.75zm0 2.25A3 3 0 1 1 9 12a3 3 0 0 1 3-3z"/></svg>
+        </span>
+        <span class="row-label">OnlyFans</span>
+        <span class="row-arrow">→</span>
       </button>
 
-      <!-- Safe social -->
-      <a href="https://bsky.app/profile/wildkindness69.bsky.social" target="_blank" rel="noopener" class="link-btn">
-        <span class="link-icon"><svg viewBox="0 0 24 24"><path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.056-3.912.58-7.387 2.005-2.83 7.078 5.013 5.19 6.87-1.113 7.823-4.308.953 3.195 2.05 9.271 7.733 4.308 4.267-4.308 1.172-6.498-2.74-7.078a8.741 8.741 0 0 1-.415-.056c.14.017.279.036.415.056 2.67.297 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.861-.902-2.204-.659-.299-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8z"/></svg></span>
-        <span class="link-label">Bluesky</span><span class="link-arrow">&#8594;</span>
+      <a href="https://bsky.app/profile/wildkindness69.bsky.social" target="_blank" rel="noopener" class="link-row">
+        <span class="row-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.056-3.912.58-7.387 2.005-2.83 7.078 5.013 5.19 6.87-1.113 7.823-4.308.953 3.195 2.05 9.271 7.733 4.308 4.267-4.308 1.172-6.498-2.74-7.078a8.741 8.741 0 0 1-.415-.056c.14.017.279.036.415.056 2.67.297 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.861-.902-2.204-.659-.299-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8z"/></svg>
+        </span>
+        <span class="row-label">Bluesky</span>
+        <span class="row-arrow">→</span>
       </a>
 
-      <div class="link-btn" style="opacity:0.3;cursor:not-allowed;pointer-events:none;">
-        <span class="link-icon"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span>
-        <span class="link-label">Twitter / X</span><span class="soon-badge">Coming Soon</span>
-      </div>
+      <a href="https://x.com/wildkindness69" target="_blank" rel="noopener" class="link-row">
+        <span class="row-icon">
+          <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </span>
+        <span class="row-label">Twitter / X</span>
+        <span class="row-arrow">→</span>
+      </a>
 
-      <!-- Messaging — safe -->
-      <a href="https://signal.me/#eu/j5o7xP5G6jN6eI9y8lLNLUB-8MszXPiWd9N" target="_blank" rel="noopener" class="link-btn">
-        <span class="link-icon"><svg fill="currentColor" viewBox="0 0 32 32"><g><path d="M26.6,16c-0.2,4-1.9,7.2-5.5,9.2c-1.8,1-3.7,1.4-5.8,1.3c-1.7-0.1-3.3-0.6-4.7-1.5C10.4,25,10.3,25,10.1,25c-1.3,0.3-2.5,0.6-3.8,0.9c-0.2,0.1-0.3,0-0.2-0.2c0.3-1.3,0.6-2.5,0.9-3.8c0-0.2,0-0.3-0.1-0.5c-3.8-6.3,0-14.6,7.3-15.8c5.7-1,11.2,2.8,12.2,8.6C26.5,14.8,26.6,15.4,26.6,16z"/><path d="M4.6,28.6c-0.8,0-1.4-0.7-1.2-1.4c0.2-0.8,0.4-1.6,0.6-2.5c0-0.1,0.1-0.1,0.2-0.1c0.3,0.1,0.6,0.1,0.9,0.2c0.2,0,0.1,0.1,0.1,0.2c-0.1,0.7-0.3,1.3-0.5,2c-0.1,0.3-0.1,0.3,0.3,0.2c0.7-0.1,1.3-0.3,2-0.5c0.2,0,0.2,0,0.3,0.2c0,0.3,0.1,0.5,0.2,0.8c0,0.1,0,0.2-0.1,0.2C6.4,28.2,5.6,28.4,4.6,28.6z"/><path d="M3,16c0-0.6,0-1.1,0.1-1.7c0-0.2,0.1-0.2,0.3-0.2c0.2,0,0.5,0.1,0.8,0.1c0.1,0,0.2,0.1,0.2,0.2c-0.1,1.1-0.1,2.1,0,3.2c0,0.1,0,0.2-0.1,0.2c-0.3,0-0.6,0.1-0.9,0.1c-0.2,0-0.2-0.1-0.2-0.2C3,17.2,3,16.6,3,16z"/><path d="M29,16c0,0.6,0,1.1-0.1,1.7c0,0.2-0.1,0.2-0.3,0.2c-0.2,0-0.5-0.1-0.7-0.1c-0.3,0-0.3,0-0.2-0.3c0.1-0.9,0.1-1.7,0-2.6c0-0.1,0-0.3,0-0.5c0-0.1,0-0.2,0.2-0.2c0.3,0,0.5-0.1,0.8-0.1c0.2,0,0.2,0,0.2,0.2C29,14.8,29,15.4,29,16z"/><path d="M16,3c0.5,0,1.1,0,1.7,0.1c0.2,0,0.2,0.1,0.2,0.3c0,0.2-0.1,0.5-0.1,0.7c0,0.1-0.1,0.2-0.2,0.2c-1-0.1-2.1-0.1-3.1,0c-0.2,0-0.2,0-0.2-0.2c0-0.3-0.1-0.5-0.1-0.8c0-0.1,0-0.2,0.2-0.2C14.8,3,15.4,3,16,3z"/><path d="M16,29c-0.6,0-1.2,0-1.8-0.1c-0.2,0-0.2-0.1-0.2-0.3c0-0.2,0.1-0.5,0.1-0.8c0-0.1,0.1-0.2,0.2-0.2c1.1,0.1,2.1,0.1,3.2,0c0.1,0,0.2,0,0.2,0.2c0,0.3,0.1,0.6,0.1,0.8c0,0.2-0.1,0.2-0.2,0.2C17.2,29,16.6,29,16,29z"/></g></svg></span>
-        <span class="link-label">Signal</span><span class="link-arrow">&#8594;</span>
+      <a href="https://signal.me/#eu/j5o7xP5G6jN6eI9y8lLNLUB-8MszXPiWd9N" target="_blank" rel="noopener" class="link-row">
+        <span class="row-icon">
+          <svg fill="currentColor" viewBox="0 0 32 32"><g><path d="M26.6,16c-0.2,4-1.9,7.2-5.5,9.2c-1.8,1-3.7,1.4-5.8,1.3c-1.7-0.1-3.3-0.6-4.7-1.5C10.4,25,10.3,25,10.1,25c-1.3,0.3-2.5,0.6-3.8,0.9c-0.2,0.1-0.3,0-0.2-0.2c0.3-1.3,0.6-2.5,0.9-3.8c0-0.2,0-0.3-0.1-0.5c-3.8-6.3,0-14.6,7.3-15.8c5.7-1,11.2,2.8,12.2,8.6C26.5,14.8,26.6,15.4,26.6,16z"/><path d="M4.6,28.6c-0.8,0-1.4-0.7-1.2-1.4c0.2-0.8,0.4-1.6,0.6-2.5c0-0.1,0.1-0.1,0.2-0.1c0.3,0.1,0.6,0.1,0.9,0.2c0.2,0,0.1,0.1,0.1,0.2c-0.1,0.7-0.3,1.3-0.5,2c-0.1,0.3-0.1,0.3,0.3,0.2c0.7-0.1,1.3-0.3,2-0.5c0.2,0,0.2,0,0.3,0.2c0,0.3,0.1,0.5,0.2,0.8c0,0.1,0,0.2-0.1,0.2C6.4,28.2,5.6,28.4,4.6,28.6z"/><path d="M3,16c0-0.6,0-1.1,0.1-1.7c0-0.2,0.1-0.2,0.3-0.2c0.2,0,0.5,0.1,0.8,0.1c0.1,0,0.2,0.1,0.2,0.2c-0.1,1.1-0.1,2.1,0,3.2c0,0.1,0,0.2-0.1,0.2c-0.3,0-0.6,0.1-0.9,0.1c-0.2,0-0.2-0.1-0.2-0.2C3,17.2,3,16.6,3,16z"/><path d="M29,16c0,0.6,0,1.1-0.1,1.7c0,0.2-0.1,0.2-0.3,0.2c-0.2,0-0.5-0.1-0.7-0.1c-0.3,0-0.3,0-0.2-0.3c0.1-0.9,0.1-1.7,0-2.6c0-0.1,0-0.3,0-0.5c0-0.1,0-0.2,0.2-0.2c0.3,0,0.5-0.1,0.8-0.1c0.2,0,0.2,0,0.2,0.2C29,14.8,29,15.4,29,16z"/><path d="M16,3c0.5,0,1.1,0,1.7,0.1c0.2,0,0.2,0.1,0.2,0.3c0,0.2-0.1,0.5-0.1,0.7c0,0.1-0.1,0.2-0.2,0.2c-1-0.1-2.1-0.1-3.1,0c-0.2,0-0.2,0-0.2-0.2c0-0.3-0.1-0.5-0.1-0.8c0-0.1,0-0.2,0.2-0.2C14.8,3,15.4,3,16,3z"/><path d="M16,29c-0.6,0-1.2,0-1.8-0.1c-0.2,0-0.2-0.1-0.2-0.3c0-0.2,0.1-0.5,0.1-0.8c0-0.1,0.1-0.2,0.2-0.2c1.1,0.1,2.1,0.1,3.2,0c0.1,0,0.2,0,0.2,0.2c0,0.3,0.1,0.6,0.1,0.8c0,0.2-0.1,0.2-0.2,0.2C17.2,29,16.6,29,16,29z"/></g></svg>
+        </span>
+        <span class="row-label">Signal</span>
+        <span class="row-arrow">→</span>
       </a>
-      <a href="https://wa.me/19258979008" target="_blank" rel="noopener" class="link-btn">
-        <span class="link-icon"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg></span>
-        <span class="link-label">WhatsApp</span><span class="link-arrow">&#8594;</span>
+
+      <a href="https://wa.me/19258979008" target="_blank" rel="noopener" class="link-row">
+        <span class="row-icon">
+          <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+        </span>
+        <span class="row-label">WhatsApp</span>
+        <span class="row-arrow">→</span>
       </a>
-      <a href="https://t.me/wildkindness69" target="_blank" rel="noopener" class="link-btn">
-        <span class="link-icon"><svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></span>
-        <span class="link-label">Telegram</span><span class="link-arrow">&#8594;</span>
+
+      <a href="https://t.me/wildkindness69" target="_blank" rel="noopener" class="link-row">
+        <span class="row-icon">
+          <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        </span>
+        <span class="row-label">Telegram</span>
+        <span class="row-arrow">→</span>
       </a>
-      <a href="https://www.wildkindness69.com" target="_blank" rel="noopener" class="link-btn">
-        <span class="link-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.22.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></span>
-        <span class="link-label">Website</span><span class="link-arrow">&#8594;</span>
+
+      <a href="https://www.wildkindness69.com" target="_blank" rel="noopener" class="link-row">
+        <span class="row-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.22.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+        </span>
+        <span class="row-label">Website</span>
+        <span class="row-arrow">→</span>
       </a>
+
     </div>
-    <div class="blind-hem"></div>
   </div>
 
+  <!-- FOOTER -->
   <div class="blind-wrap" id="blind2">
-    <footer class="colophon"><p>&copy; 2026 Wild Kindness &nbsp;&middot;&nbsp; San Francisco, CA</p></footer>
+    <footer class="site-footer">
+      <img src="https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png" alt="" class="footer-logo">
+      <p class="footer-copy">&copy; 2026 Wild Kindness &nbsp;·&nbsp; San Francisco, CA</p>
+    </footer>
   </div>
 
 </div>
@@ -204,129 +352,87 @@
 <script>
 (function() {
 
-  // ── NSFW GATE ─────────────────────────────────────
+  // ── NSFW GATE ──────────────────────────────────────
   var pendingUrl = null;
-  var nsfwConfirmed = false;
+  var nsfwOk     = false;
 
   function gateLink(url) {
-    if (nsfwConfirmed) {
-      window.open(url, '_blank', 'noopener');
-      return;
-    }
+    if (nsfwOk) { window.open(url, '_blank', 'noopener'); return; }
     pendingUrl = url;
     document.getElementById('gateOverlay').classList.add('active');
   }
-
   function closeGate() {
     document.getElementById('gateOverlay').classList.remove('active');
     pendingUrl = null;
   }
-
   document.getElementById('gateYes').addEventListener('click', function() {
-    nsfwConfirmed = true;
+    nsfwOk = true;
     document.getElementById('gateOverlay').classList.remove('active');
-    if (pendingUrl) {
-      window.open(pendingUrl, '_blank', 'noopener');
-      pendingUrl = null;
-    }
+    if (pendingUrl) { window.open(pendingUrl, '_blank', 'noopener'); pendingUrl = null; }
   });
-
-  // Close on overlay click outside box
   document.getElementById('gateOverlay').addEventListener('click', function(e) {
     if (e.target === this) closeGate();
   });
-
   window.gateLink  = gateLink;
   window.closeGate = closeGate;
 
-  // ── SPRING PHYSICS ────────────────────────────────
+  // ── SPRING PHYSICS ─────────────────────────────────
   function Spring(k, b, mass) {
-    this.k = k; this.b = b; this.m = mass;
-    this.pos = 0; this.vel = 0;
-    this.target = 1; this.settled = false;
+    this.k=k; this.b=b; this.m=mass;
+    this.pos=0; this.vel=0; this.target=1; this.settled=false;
   }
   Spring.prototype.update = function(dt) {
     if (this.settled) return;
-    var force = -this.k * (this.pos - this.target) - this.b * this.vel;
-    this.vel += (force / this.m) * dt;
-    this.pos += this.vel * dt;
-    if (Math.abs(this.pos - this.target) < 0.0006 && Math.abs(this.vel) < 0.0006) {
-      this.pos = this.target; this.vel = 0; this.settled = true;
+    var f = -this.k*(this.pos-this.target) - this.b*this.vel;
+    this.vel += (f/this.m)*dt;
+    this.pos += this.vel*dt;
+    if (Math.abs(this.pos-this.target)<0.0006 && Math.abs(this.vel)<0.0006) {
+      this.pos=this.target; this.vel=0; this.settled=true;
     }
   };
 
-  // ── BLINDS CONFIG ─────────────────────────────────
-  // Slower, more fun: lower stiffness, more bounce, longer stagger
+  // Slow, weighted pull — like a heavy roller map
   var blinds = [
-    { id:'blind0', delay:0,    spring: new Spring(80,  14, 1.2) }, // header — slow dreamy pull
-    { id:'blind1', delay:380,  spring: new Spring(65,  11, 1.6) }, // links — heavier, more bounce
-    { id:'blind2', delay:720,  spring: new Spring(110, 18, 0.8) }, // footer — snappier
+    { id:'blind0', delay:0,   spring: new Spring(75,  13, 1.3) },
+    { id:'blind1', delay:350, spring: new Spring(60,  11, 1.8) },
+    { id:'blind2', delay:700, spring: new Spring(100, 17, 0.9) },
   ];
 
-  var startTs = null;
-  var active  = false;
+  var startTs = null, active = false;
 
   function initBlinds() {
-    for (var i = 0; i < blinds.length; i++) {
-      var b  = blinds[i];
-      var el = document.getElementById(b.id);
+    for (var i=0; i<blinds.length; i++) {
+      var b=blinds[i], el=document.getElementById(b.id);
       if (!el) continue;
-      b.el = el;
-      // Measure height
-      el.style.visibility = 'hidden';
-      el.style.clipPath   = 'none';
-      b.naturalH = el.offsetHeight;
-      el.style.visibility = '';
-      el.style.clipPath   = 'inset(0 0 100% 0)';
-      el.style.willChange = 'clip-path';
-      // Inner element starts rolled up
-      var inner = el.querySelector('.header-card, .links-box, .colophon, footer');
-      if (inner) {
-        inner.style.transform  = 'translateY(-100%)';
-        inner.style.willChange = 'transform';
-        b.inner = inner;
-      }
+      b.el=el;
+      el.style.visibility='hidden'; el.style.clipPath='none';
+      b.naturalH=el.offsetHeight;
+      el.style.visibility=''; el.style.clipPath='inset(0 0 100% 0)';
+      el.style.willChange='clip-path';
+      var inner=el.querySelector('.logo-section,.links-section,.site-footer,footer');
+      if (inner) { inner.style.transform='translateY(-100%)'; inner.style.willChange='transform'; b.inner=inner; }
     }
   }
 
   function tick(ts) {
     if (!active) return;
-    if (!startTs) startTs = ts;
-    var elapsed = ts - startTs;
-    var dt = 1 / 60;
-    var allDone = true;
-
-    for (var i = 0; i < blinds.length; i++) {
-      var b = blinds[i];
+    if (!startTs) startTs=ts;
+    var elapsed=ts-startTs, dt=1/60, allDone=true;
+    for (var i=0; i<blinds.length; i++) {
+      var b=blinds[i];
       if (!b.el) continue;
-      if (elapsed < b.delay) { allDone = false; continue; }
-
+      if (elapsed<b.delay) { allDone=false; continue; }
       b.spring.update(dt);
-      var pos = b.spring.pos;
-
-      // Clip reveal
-      var bot = Math.max(0, (1 - pos) * 100);
-      b.el.style.clipPath = 'inset(0 0 ' + bot.toFixed(2) + '% 0)';
-
-      // Content rolls down — offset slightly behind for tube feel
-      var ty = Math.max(-100, (1 - pos) * -100);
-      if (b.inner) b.inner.style.transform = 'translateY(' + ty.toFixed(2) + '%)';
-
-      // Hem wobble on overshoot
-      var hem = b.el.querySelector('.blind-hem');
-      if (hem) {
-        var wobble = 1 + b.spring.vel * 0.015;
-        hem.style.transform = 'scaleX(' + wobble.toFixed(3) + ')';
-      }
-
-      if (!b.spring.settled) allDone = false;
+      var pos=b.spring.pos;
+      b.el.style.clipPath='inset(0 0 '+Math.max(0,(1-pos)*100).toFixed(2)+'% 0)';
+      if (b.inner) b.inner.style.transform='translateY('+Math.max(-100,(1-pos)*-100).toFixed(2)+'%)';
+      if (!b.spring.settled) allDone=false;
     }
-
     if (allDone) {
-      active = false;
-      for (var i = 0; i < blinds.length; i++) {
-        if (blinds[i].el)    blinds[i].el.style.willChange    = 'auto';
-        if (blinds[i].inner) blinds[i].inner.style.willChange = 'auto';
+      active=false;
+      for (var i=0; i<blinds.length; i++) {
+        if (blinds[i].el)    blinds[i].el.style.willChange='auto';
+        if (blinds[i].inner) blinds[i].inner.style.willChange='auto';
       }
       return;
     }
@@ -334,22 +440,16 @@
   }
 
   function runIntro() {
-    initBlinds();
-    active  = true;
-    startTs = null;
+    initBlinds(); active=true; startTs=null;
     requestAnimationFrame(function() {
-      requestAnimationFrame(function(ts) {
-        startTs = ts;
-        tick(ts);
-      });
+      requestAnimationFrame(function(ts) { startTs=ts; tick(ts); });
     });
   }
 
-  // Run on load — no age gate upfront
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() { setTimeout(runIntro, 120); });
+  if (document.readyState==='loading') {
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(runIntro,100); });
   } else {
-    setTimeout(runIntro, 120);
+    setTimeout(runIntro,100);
   }
 
 })();
