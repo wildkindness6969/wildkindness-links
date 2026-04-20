@@ -19,7 +19,7 @@
       background-image:url('https://wildkindness-cdn.b-cdn.net/bg-pattern.png');
       background-repeat:repeat; background-size:300px auto; background-attachment:fixed;
     }
-    #introCanvas { position:fixed; inset:0; z-index:9000; pointer-events:none; width:100%; height:100%; display:none; }
+    #introCanvas { position:fixed; inset:0; z-index:9000; pointer-events:none; display:none; }
     .age-gate {
       position:fixed; inset:0; z-index:9999;
       display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -114,446 +114,362 @@
 </div>
 
 <script>
-// ═══════════════════════════════════════════════
-// PAINT PHYSICS ENGINE
-// ═══════════════════════════════════════════════
-const canvas = document.getElementById('introCanvas');
-const ctx    = canvas.getContext('2d');
-let W, H, cx, cy;
+(function() {
+  var canvas = document.getElementById('introCanvas');
+  var ctx    = canvas.getContext('2d');
+  var W, H, cx, cy;
 
-// Offscreen paint accumulation canvas
-const paintCanvas = document.createElement('canvas');
-const pctx        = paintCanvas.getContext('2d');
+  // Offscreen canvas accumulates paint permanently
+  var pc   = document.createElement('canvas');
+  var pctx = pc.getContext('2d');
 
-let logoImg   = null;
-let running   = false;
-let phase     = 'idle'; // shoot → flood → logoSlam → wipe → done
-let phaseTime = 0;
+  var logoImg = null;
+  var running = false;
 
-// All live paint blobs
-let blobs    = [];
-// All splat marks (permanent paint on screen)
-let splats   = [];
-// All falling drips
-let drips    = [];
-// Logo state
-let logo = null;
+  // Simple state machine with absolute timestamps
+  // PHASES: 'blobs' -> 'flood' -> 'white' -> 'logo' -> 'wipe' -> 'done'
+  var phase     = 'blobs';
+  var phaseStart = 0; // ms timestamp when phase began
+  var rafId     = null;
 
-const r = () => Math.random();
-const rr = (a, b) => a + r() * (b - a);
+  var blobs  = [];
+  var drips  = [];
+  var logo   = null;
+  var wipeY  = 0;
 
-// ─── BLOB ────────────────────────────────────────
-// Each blob flies from the center vanishing point toward viewer
-class Blob {
-  constructor(delay) {
-    this.delay  = delay;
-    this.alive  = true;
-    this.hit    = false;
-    // perspective z: 0=far, 1=screen
-    this.z      = 0;
-    this.vz     = rr(0.007, 0.018);
-    // wobble offset from center
-    this.ox     = rr(-80, 80);
-    this.oy     = rr(-120, 80);
-    // wobble oscillation
-    this.wx     = r() * Math.PI * 2;
-    this.wy     = r() * Math.PI * 2;
-    this.wsx    = rr(0.06, 0.14);
-    this.wsy    = rr(0.05, 0.11);
-    this.wax    = rr(20, 80);
-    this.way    = rr(15, 50);
-    // size
-    this.baseR  = rr(18, 80);
-    // trail of past positions
-    this.trail  = [];
-    this.born   = false;
-  }
+  function rnd(a, b) { return a + Math.random() * (b - a); }
 
-  screenPos() {
-    const fov   = 500;
-    const scale = fov / (fov + (1 - this.z) * 1800);
-    const wobX  = Math.sin(this.wx) * this.wax * (1 - this.z * 0.7);
-    const wobY  = Math.sin(this.wy) * this.way * (1 - this.z * 0.7);
+  // ── Blob ──
+  function makeBlob(delayMs) {
     return {
-      x: cx + (this.ox + wobX) * scale,
-      y: cy + (this.oy + wobY) * scale,
-      s: scale
+      delay:  delayMs,
+      born:   false,
+      hit:    false,
+      z:      0,
+      vz:     rnd(0.008, 0.02),
+      ox:     rnd(-100, 100),
+      oy:     rnd(-130, 100),
+      wx:     Math.random() * Math.PI * 2,
+      wy:     Math.random() * Math.PI * 2,
+      wsx:    rnd(0.05, 0.13),
+      wsy:    rnd(0.04, 0.10),
+      wax:    rnd(20, 90),
+      way:    rnd(15, 55),
+      baseR:  rnd(20, 90),
+      trail:  []
     };
   }
 
-  update(t) {
-    if (t < this.delay) return;
-    this.born = true;
-    if (this.hit) return;
-    this.z  += this.vz * (1 + this.z * 5); // accelerate hard near end
-    this.wx += this.wsx;
-    this.wy += this.wsy;
-    const p = this.screenPos();
-    this.trail.push({ x: p.x, y: p.y, r: this.baseR * p.s * 0.6 });
-    if (this.trail.length > 20) this.trail.shift();
-    if (this.z >= 1) {
-      this.hit = true;
-      this.splat(p.x, p.y, this.baseR * p.s);
-    }
+  function blobPos(b) {
+    var fov   = 500;
+    var scale = fov / (fov + (1 - b.z) * 1600);
+    var wx    = Math.sin(b.wx) * b.wax * (1 - b.z * 0.6);
+    var wy    = Math.sin(b.wy) * b.way * (1 - b.z * 0.6);
+    return { x: cx + (b.ox + wx) * scale, y: cy + (b.oy + wy) * scale, s: scale };
   }
 
-  splat(x, y, r) {
-    // Main blob mark on paint canvas
+  function splatBlob(x, y, r) {
+    // Main organic blob shape on paint canvas
     pctx.save();
-    pctx.globalAlpha = rr(0.85, 1);
-    // Draw organic blob using random bezier
+    pctx.fillStyle = 'white';
     pctx.beginPath();
-    const pts = 10 + Math.floor(r() * 8);
-    for (let i = 0; i <= pts; i++) {
-      const angle = (i / pts) * Math.PI * 2;
-      const jitter = rr(0.55, 1.35);
-      const rx = x + Math.cos(angle) * r * jitter;
-      const ry = y + Math.sin(angle) * r * jitter * rr(0.6, 1.2);
+    var pts = 10 + Math.floor(Math.random() * 8);
+    for (var i = 0; i <= pts; i++) {
+      var a = (i / pts) * Math.PI * 2;
+      var jit = rnd(0.5, 1.4);
+      var rx = x + Math.cos(a) * r * jit;
+      var ry = y + Math.sin(a) * r * jit * rnd(0.55, 1.1);
       i === 0 ? pctx.moveTo(rx, ry) : pctx.lineTo(rx, ry);
     }
     pctx.closePath();
-    pctx.fillStyle = 'white';
     pctx.fill();
     pctx.restore();
 
-    // Secondary small satellite blobs
-    const count = 8 + Math.floor(r() * 14);
-    for (let i = 0; i < count; i++) {
-      const angle  = r() * Math.PI * 2;
-      const dist   = r() < 0.4 ? rr(r * 0.3, r * 0.9) : rr(r * 1.0, r * 3.5);
-      const sr     = rr(3, r * 0.5);
-      const sx     = x + Math.cos(angle) * dist;
-      const sy     = y + Math.sin(angle) * dist;
+    // Satellite droplets
+    var count = 10 + Math.floor(Math.random() * 18);
+    for (var j = 0; j < count; j++) {
+      var angle = Math.random() * Math.PI * 2;
+      var dist  = Math.random() < 0.4 ? rnd(r * 0.2, r * 0.8) : rnd(r * 0.9, r * 3.2);
+      var sr    = rnd(3, r * 0.45);
+      var sx    = x + Math.cos(angle) * dist;
+      var sy    = y + Math.sin(angle) * dist;
       pctx.beginPath();
       pctx.arc(sx, sy, sr, 0, Math.PI * 2);
-      pctx.fillStyle = `rgba(255,255,255,${rr(0.5, 1)})`;
+      pctx.fillStyle = 'rgba(255,255,255,' + rnd(0.6, 1) + ')';
       pctx.fill();
-
       // Some become drips
-      if (r() < 0.3 && sy < H * 0.92) {
-        drips.push(new Drip(sx, sy, sr * rr(0.4, 0.9)));
+      if (Math.random() < 0.25 && sy < H * 0.9) {
+        drips.push(makeDrip(sx, sy, sr * rnd(0.5, 1.0)));
       }
     }
 
-    // Drip strings from impact point
-    const dripCount = 3 + Math.floor(r() * 5);
-    for (let i = 0; i < dripCount; i++) {
-      const angle = rr(-Math.PI * 0.4, Math.PI * 1.4); // mostly downward
-      const dist  = rr(r * 0.2, r * 0.8);
-      drips.push(new Drip(
-        x + Math.cos(angle) * dist,
-        y + Math.sin(angle) * dist,
-        rr(4, 14)
-      ));
+    // Drip strings from impact
+    for (var k = 0; k < 4 + Math.floor(Math.random() * 5); k++) {
+      var da = rnd(Math.PI * 0.1, Math.PI * 0.9); // mostly downward
+      var dd = rnd(r * 0.1, r * 0.7);
+      drips.push(makeDrip(x + Math.cos(da) * dd, y + Math.sin(da) * dd, rnd(4, 16)));
     }
   }
 
-  draw() {
-    if (!this.born) return;
-    if (this.hit) return;
+  // ── Drip ──
+  function makeDrip(x, y, r) {
+    return { x: x, y: y, r: r, vy: rnd(0.3, 2), vx: rnd(-0.2, 0.2), ay: rnd(0.04, 0.14), done: false };
+  }
 
-    // Trail — stretchy paint drip behind blob
-    for (let i = 1; i < this.trail.length; i++) {
-      const tp  = this.trail[i];
-      const pp  = this.trail[i - 1];
-      const a   = (i / this.trail.length) * 0.7;
-      const tr  = tp.r * (i / this.trail.length);
+  function updateDrip(d) {
+    if (d.done) return;
+    var px = d.x, py = d.y;
+    d.vy += d.ay;
+    if (d.vy > 15) d.vy = 15;
+    d.x += d.vx; d.y += d.vy;
+    // Paint drip onto permanent canvas
+    pctx.beginPath();
+    pctx.moveTo(px, py); pctx.lineTo(d.x, d.y);
+    pctx.strokeStyle = 'white';
+    pctx.lineWidth   = d.r * 1.5;
+    pctx.lineCap     = 'round';
+    pctx.stroke();
+    pctx.beginPath();
+    pctx.arc(d.x, d.y, d.r * rnd(0.8, 1.2), 0, Math.PI * 2);
+    pctx.fillStyle = 'white';
+    pctx.fill();
+    if (d.y > H + 30) d.done = true;
+  }
+
+  function drawBlob(b) {
+    if (!b.born || b.hit) return;
+    var p = blobPos(b);
+    var R = b.baseR * p.s;
+
+    // Trail
+    for (var i = 1; i < b.trail.length; i++) {
+      var tp = b.trail[i], pp = b.trail[i - 1];
+      var a  = (i / b.trail.length) * 0.65;
+      var tr = R * (i / b.trail.length) * 0.8;
       ctx.beginPath();
-      ctx.moveTo(pp.x, pp.y);
-      ctx.lineTo(tp.x, tp.y);
-      ctx.strokeStyle = `rgba(255,255,255,${a})`;
-      ctx.lineWidth   = tr * 1.8;
+      ctx.moveTo(pp.x, pp.y); ctx.lineTo(tp.x, tp.y);
+      ctx.strokeStyle = 'rgba(255,255,255,' + a + ')';
+      ctx.lineWidth   = Math.max(2, tr * 1.6);
       ctx.lineCap     = 'round';
       ctx.stroke();
-
-      // Tiny satellite drips along trail
-      if (i % 3 === 0 && r() < 0.4) {
-        ctx.beginPath();
-        ctx.arc(tp.x + rr(-tr, tr), tp.y + rr(-tr, tr), rr(2, tr * 0.5), 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${a * 0.6})`;
-        ctx.fill();
-      }
     }
 
-    // Main blob — organic shape
-    const p = this.screenPos();
-    const R = this.baseR * p.s;
-    // Squish: stretched along travel direction
+    // Blob
     ctx.save();
     ctx.translate(p.x, p.y);
-    ctx.scale(1 + this.z * 0.4, 1);
-
+    ctx.scale(1 + b.z * 0.5, 1);
+    var g = ctx.createRadialGradient(0, 0, 0, 0, 0, R * 1.3);
+    g.addColorStop(0,   'rgba(255,255,255,1)');
+    g.addColorStop(0.65,'rgba(255,255,255,0.85)');
+    g.addColorStop(1,   'rgba(255,255,255,0)');
     ctx.beginPath();
-    const pts = 12;
-    for (let i = 0; i <= pts; i++) {
-      const angle  = (i / pts) * Math.PI * 2;
-      const jitter = rr(0.7, 1.3);
-      const rx = Math.cos(angle) * R * jitter;
-      const ry = Math.sin(angle) * R * jitter * 0.85;
-      i === 0 ? ctx.moveTo(rx, ry) : ctx.lineTo(rx, ry);
-    }
-    ctx.closePath();
-
-    // Gradient: bright core, softer edge
-    const grd = ctx.createRadialGradient(0, 0, 0, 0, 0, R * 1.3);
-    grd.addColorStop(0,   'rgba(255,255,255,1)');
-    grd.addColorStop(0.6, 'rgba(255,255,255,0.9)');
-    grd.addColorStop(1,   'rgba(255,255,255,0)');
-    ctx.fillStyle = grd;
+    ctx.arc(0, 0, R * 1.3, 0, Math.PI * 2);
+    ctx.fillStyle = g;
     ctx.fill();
     ctx.restore();
   }
-}
 
-// ─── DRIP ────────────────────────────────────────
-class Drip {
-  constructor(x, y, r) {
-    this.x   = x;
-    this.y   = y;
-    this.r   = r;
-    this.vy  = rr(0.4, 2.5);       // downward velocity
-    this.vx  = rr(-0.3, 0.3);
-    this.ay  = rr(0.04, 0.12);     // gravity
-    this.len = rr(8, 60);           // drip tail length
-    this.history = [{ x, y }];
-    this.done = false;
+  // ── Logo ──
+  function makeLogo() {
+    return {
+      z:      0,
+      vz:     0.006,
+      rx:     rnd(-0.5, 0.5),
+      ry:     rnd(-0.4, 0.4),
+      rz:     rnd(-0.3, 0.3),
+      rvx:    rnd(0.025, 0.06) * (Math.random() < 0.5 ? 1 : -1),
+      rvy:    rnd(0.02, 0.05)  * (Math.random() < 0.5 ? 1 : -1),
+      rvz:    rnd(0.01, 0.025) * (Math.random() < 0.5 ? 1 : -1),
+      alpha:  0,
+      slapped:false
+    };
   }
 
-  update() {
-    if (this.done) return;
-    this.vy += this.ay;
-    this.x  += this.vx;
-    this.y  += this.vy;
-    this.history.push({ x: this.x, y: this.y });
-    if (this.history.length > this.len) this.history.shift();
-
-    // Paint the drip onto the paint canvas as it moves
-    if (this.history.length > 1) {
-      const prev = this.history[this.history.length - 2];
-      pctx.beginPath();
-      pctx.moveTo(prev.x, prev.y);
-      pctx.lineTo(this.x, this.y);
-      pctx.strokeStyle = 'white';
-      pctx.lineWidth   = this.r * 1.6;
-      pctx.lineCap     = 'round';
-      pctx.stroke();
-      // Blob at drip head
-      pctx.beginPath();
-      pctx.arc(this.x, this.y, this.r * rr(0.8, 1.3), 0, Math.PI * 2);
-      pctx.fillStyle = 'white';
-      pctx.fill();
-    }
-
-    if (this.y > H + 20) this.done = true;
-    // Terminal velocity
-    if (this.vy > 18) this.vy = 18;
-  }
-}
-
-// ─── LOGO SLAM ───────────────────────────────────
-class LogoSlam {
-  constructor() {
-    this.z      = 0;
-    this.vz     = 0.005;
-    this.rotX   = rr(-0.5, 0.5);
-    this.rotY   = rr(-0.4, 0.4);
-    this.rotZ   = rr(-0.3, 0.3);
-    this.rVx    = rr(0.03, 0.07) * (r() < 0.5 ? 1 : -1);
-    this.rVy    = rr(0.02, 0.05) * (r() < 0.5 ? 1 : -1);
-    this.rVz    = rr(0.01, 0.03) * (r() < 0.5 ? 1 : -1);
-    this.slapped = false;
-    this.wipeY   = -10;
-    this.wipeDone = false;
-    this.alpha   = 0;
-  }
-
-  update() {
-    if (this.slapped) {
-      this.wipeY += H * 0.055;
-      if (this.wipeY > H + 100) this.wipeDone = true;
-      return;
-    }
-    this.z  += this.vz * (1 + this.z * 5);
-    // Tumble slows as it approaches — sticker hitting a surface
-    const tumble = Math.max(0, 1 - this.z * 1.3);
-    this.rotX += this.rVx * tumble;
-    this.rotY += this.rVy * tumble;
-    this.rotZ += this.rVz * tumble;
-    this.alpha = Math.min(1, this.z * 2.5);
-    if (this.z >= 1) this.slapped = true;
-  }
-
-  draw() {
+  function drawLogo(lg, ts) {
     if (!logoImg) return;
-
-    if (this.slapped) {
-      // White flood above wipe line (remaining paint)
+    if (phase === 'wipe') {
+      // White above wipe line
       ctx.fillStyle = 'white';
-      ctx.fillRect(0, 0, W, this.wipeY);
-
-      // Logo rides the wipe edge
-      const logoSize = Math.min(W * 0.75, H * 0.55);
+      ctx.fillRect(0, 0, W, wipeY);
+      // Logo at wipe edge
+      var logoSize = Math.min(W * 0.72, H * 0.52);
       ctx.save();
-      ctx.translate(cx, this.wipeY + logoSize * 0.05);
-      // Slight flutter as it slides
-      ctx.rotate(Math.sin(Date.now() * 0.015) * 0.025);
-      ctx.globalAlpha = 1;
-      ctx.drawImage(logoImg, -logoSize / 2, -logoSize * 0.52, logoSize, logoSize);
+      ctx.translate(cx, wipeY + logoSize * 0.04);
+      ctx.rotate(Math.sin(ts * 0.012) * 0.022);
+      ctx.drawImage(logoImg, -logoSize/2, -logoSize * 0.52, logoSize, logoSize);
       ctx.restore();
       return;
     }
-
-    const fov   = 500;
-    const scale = fov / (fov + (1 - this.z) * 1800);
-    const size  = Math.min(W * 0.75, H * 0.55) * scale;
-
+    // Flying toward viewer
+    var fov   = 500;
+    var scale = fov / (fov + (1 - lg.z) * 1600);
+    var size  = Math.min(W * 0.72, H * 0.52) * scale;
+    var tumble = Math.max(0, 1 - lg.z * 1.4);
     ctx.save();
-    ctx.globalAlpha = this.alpha;
+    ctx.globalAlpha = lg.alpha;
     ctx.translate(cx, cy);
-
-    // Simulate paper tumbling with skew/scale transforms
-    const sx = Math.cos(this.rotY);
-    const sy = Math.cos(this.rotX);
-    ctx.transform(sx, Math.sin(this.rotX) * 0.4, Math.sin(this.rotY) * 0.4, sy, 0, 0);
-    ctx.rotate(this.rotZ);
-
-    ctx.shadowColor = 'rgba(0,0,0,0.5)';
-    ctx.shadowBlur  = 30 * scale;
-    ctx.drawImage(logoImg, -size / 2, -size / 2, size, size);
+    ctx.transform(
+      Math.cos(lg.ry), Math.sin(lg.rx) * 0.35,
+      Math.sin(lg.ry) * 0.35, Math.cos(lg.rx),
+      0, 0
+    );
+    ctx.rotate(lg.rz);
+    ctx.shadowColor = 'rgba(0,0,0,0.45)';
+    ctx.shadowBlur  = 28 * scale;
+    ctx.drawImage(logoImg, -size/2, -size/2, size, size);
     ctx.restore();
   }
-}
 
-// ─── MAIN LOOP ───────────────────────────────────
-let startTime = null;
-let rafId     = null;
+  // ── MAIN TICK ──
+  function tick(ts) {
+    if (!running) return;
 
-function resize() {
-  W = canvas.width      = paintCanvas.width  = window.innerWidth;
-  H = canvas.height     = paintCanvas.height = window.innerHeight;
-  cx = W / 2; cy = H / 2;
-}
+    W = canvas.width = pc.width = window.innerWidth;
+    H = canvas.height = pc.height = window.innerHeight;
+    cx = W/2; cy = H/2;
 
-function initScene() {
-  resize();
-  pctx.clearRect(0, 0, W, H);
-  blobs = [];
-  drips = [];
-  logo  = null;
-  phase = 'shoot';
-  phaseTime = 0;
-  startTime = null;
+    ctx.clearRect(0, 0, W, H);
 
-  // Spawn 20 blobs in staggered waves — big variance in size
-  for (let i = 0; i < 20; i++) {
-    blobs.push(new Blob(i * 0.06 + r() * 0.05));
-  }
-}
+    var elapsed = ts - phaseStart; // ms since phase start
 
-function tick(ts) {
-  if (!running) return;
-  if (!startTime) startTime = ts;
-  const t = (ts - startTime) / 1000;
+    if (phase === 'blobs') {
+      // Draw accumulated paint
+      ctx.drawImage(pc, 0, 0);
 
-  resize();
-  ctx.clearRect(0, 0, W, H);
-
-  if (phase === 'shoot') {
-    // Draw paint accumulation from offscreen canvas
-    ctx.drawImage(paintCanvas, 0, 0);
-
-    // Update blobs
-    let allHit = true;
-    for (const b of blobs) {
-      b.update(t);
-      b.draw();
-      if (!b.hit) allHit = false;
-    }
-
-    // Update drips — they write themselves onto paintCanvas
-    for (const d of drips) d.update();
-
-    // Once all blobs hit and enough time passed, flood to full white then launch logo
-    if (allHit || t > 2.8) {
-      phaseTime += 0.025;
-      // Flood remaining gaps with white
-      pctx.fillStyle = `rgba(255,255,255,${Math.min(0.08, phaseTime * 0.04)})`;
-      pctx.fillRect(0, 0, W, H);
-      ctx.drawImage(paintCanvas, 0, 0);
-
-      if (phaseTime > 1.2) {
-        // Check coverage — sample paint canvas for white pixels
-        // Just use time-based transition after ~1.5s of flooding
+      // Update blobs
+      var allHit = true;
+      for (var i = 0; i < blobs.length; i++) {
+        var b = blobs[i];
+        if (elapsed < b.delay) { allHit = false; continue; }
+        b.born = true;
+        if (!b.hit) {
+          b.z  += b.vz * (1 + b.z * 4);
+          b.wx += b.wsx; b.wy += b.wsy;
+          var p = blobPos(b);
+          b.trail.push({ x: p.x, y: p.y });
+          if (b.trail.length > 22) b.trail.shift();
+          if (b.z >= 1) {
+            b.hit = true;
+            splatBlob(p.x, p.y, b.baseR * p.s);
+          } else {
+            allHit = false;
+          }
+        }
+        drawBlob(b);
       }
 
-      if (phaseTime > 2.0) {
-        // Full white, launch logo
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, W, H);
-        phase = 'logoSlam';
-        phaseTime = 0;
-        startTime = ts;
-        logo = new LogoSlam();
+      // Update drips
+      for (var d = 0; d < drips.length; d++) updateDrip(drips[d]);
+
+      // Transition to flood after 2.2s OR all blobs done
+      if (elapsed > 2200 || allHit) {
+        phase = 'flood';
+        phaseStart = ts;
       }
     }
+    else if (phase === 'flood') {
+      // Keep drawing paint + drips, flood white over ~600ms
+      ctx.drawImage(pc, 0, 0);
+      for (var d = 0; d < drips.length; d++) updateDrip(drips[d]);
+      var prog = Math.min(1, elapsed / 600);
+      ctx.fillStyle = 'rgba(255,255,255,' + (prog * 0.95) + ')';
+      ctx.fillRect(0, 0, W, H);
+      if (prog >= 1) {
+        phase = 'logo';
+        phaseStart = ts;
+        logo = makeLogo();
+      }
+    }
+    else if (phase === 'logo') {
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, W, H);
+
+      // Accelerate logo toward viewer
+      logo.z  += logo.vz * (1 + logo.z * 5);
+      var tumble = Math.max(0, 1 - logo.z * 1.4);
+      logo.rx += logo.rvx * tumble;
+      logo.ry += logo.rvy * tumble;
+      logo.rz += logo.rvz * tumble;
+      logo.alpha = Math.min(1, logo.z * 2.5);
+
+      drawLogo(logo, ts);
+
+      if (logo.z >= 1) {
+        phase = 'wipe';
+        phaseStart = ts;
+        wipeY = 0;
+      }
+    }
+    else if (phase === 'wipe') {
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, W, H);
+
+      // Wipe down at constant speed — full screen in ~600ms
+      wipeY = Math.min(H + 120, (elapsed / 600) * (H + 120));
+      drawLogo(logo, ts);
+
+      if (wipeY >= H + 120) {
+        phase = 'done';
+        endIntro();
+        return;
+      }
+    }
+
+    rafId = requestAnimationFrame(tick);
   }
-  else if (phase === 'logoSlam') {
-    // White bg
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, W, H);
 
-    logo.update();
-    logo.draw();
+  function endIntro() {
+    running = false;
+    canvas.style.display = 'none';
+    document.getElementById('mainPage').classList.add('visible');
+  }
 
-    if (logo.wipeDone) {
-      phase = 'done';
-      endIntro();
-      return;
+  function startIntro() {
+    W = canvas.width = pc.width = window.innerWidth;
+    H = canvas.height = pc.height = window.innerHeight;
+    cx = W/2; cy = H/2;
+
+    pctx.clearRect(0, 0, W, H);
+    blobs = []; drips = []; logo = null; wipeY = 0;
+    phase = 'blobs';
+
+    // 20 blobs, staggered 0–1200ms
+    for (var i = 0; i < 20; i++) {
+      blobs.push(makeBlob(i * 60 + Math.random() * 40));
+    }
+
+    canvas.style.display = 'block';
+    running = true;
+    phaseStart = performance.now();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function runIntro() {
+    if (!logoImg) {
+      logoImg = new Image();
+      logoImg.crossOrigin = 'anonymous';
+      logoImg.onload  = startIntro;
+      logoImg.onerror = endIntro;
+      logoImg.src = 'https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png';
+    } else {
+      startIntro();
     }
   }
 
-  rafId = requestAnimationFrame(tick);
-}
-
-function endIntro() {
-  running = false;
-  canvas.style.display = 'none';
-  document.getElementById('mainPage').classList.add('visible');
-}
-
-function runIntro() {
-  if (!logoImg) {
-    logoImg = new Image();
-    logoImg.crossOrigin = 'anonymous';
-    logoImg.onload  = startIntro;
-    logoImg.onerror = endIntro;
-    logoImg.src = 'https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png';
-  } else {
-    startIntro();
-  }
-}
-
-function startIntro() {
-  canvas.style.display = 'block';
-  running = true;
-  initScene();
-  rafId = requestAnimationFrame(tick);
-}
-
-function dismiss() {
-  document.getElementById('ageGate').classList.add('dismissed');
-  runIntro();
-  try { sessionStorage.setItem('wk_age_ok', '1'); } catch(e) {}
-}
-
-try {
-  if (sessionStorage.getItem('wk_age_ok') === '1') {
+  window.dismiss = function() {
     document.getElementById('ageGate').classList.add('dismissed');
     runIntro();
-  }
-} catch(e) {}
+    try { sessionStorage.setItem('wk_age_ok','1'); } catch(e) {}
+  };
 
-window.addEventListener('resize', () => { if (running) resize(); });
+  try {
+    if (sessionStorage.getItem('wk_age_ok') === '1') {
+      document.getElementById('ageGate').classList.add('dismissed');
+      runIntro();
+    }
+  } catch(e) {}
+
+})();
 </script>
 </body>
 </html>
