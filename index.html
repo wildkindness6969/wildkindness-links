@@ -221,36 +221,54 @@
       text-transform: uppercase; opacity: 0.3;
     }
 
-    /* ── CITIZEN KANE SPIN-IN ── */
-    @keyframes kaneSpinIn {
-      0% {
-        transform: scale(0.05) rotate(-720deg);
-        opacity: 0;
-      }
-      40% {
-        opacity: 1;
-      }
-      70% {
-        transform: scale(1.08) rotate(8deg);
-      }
-      82% {
-        transform: scale(0.97) rotate(-3deg);
-      }
-      91% {
-        transform: scale(1.03) rotate(1.5deg);
-      }
-      97% {
-        transform: scale(0.99) rotate(-0.5deg);
-      }
-      100% {
-        transform: scale(1) rotate(0deg);
-        opacity: 1;
-      }
+    /* ══════════════════════════════════════════
+       FIREHOSE PAINT WIPE INTRO
+       Stage 1: Logo blasts in from nothing
+       Stage 2: White paint splat covers screen
+       Stage 3: Logo slides down, wiping paint off
+       Stage 4: Logo exits bottom, fades into header
+    ══════════════════════════════════════════ */
+
+    /* Overlay that starts white and gets wiped away */
+    #paintOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 8000;
+      pointer-events: none;
+      background: white;
+      opacity: 0;
+      transform: translateY(-100%); /* sits above screen */
     }
 
-    .page.visible {
-      animation: kaneSpinIn 1.6s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+    /* The flying logo */
+    #flyLogo {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(0.02);
+      width: 220px;
+      height: 220px;
+      z-index: 9000;
+      pointer-events: none;
+      opacity: 0;
+      filter: drop-shadow(0 0 40px rgba(255,255,255,0.9));
+      will-change: transform, opacity;
     }
+    #flyLogo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Page starts hidden, no transition — JS controls it */
+    .page {
+      max-width: 520px; margin: 0 auto;
+      padding: 40px 20px 60px;
+      opacity: 0;
+      display: flex; flex-direction: column; gap: 10px;
+      transform-origin: center center;
+    }
+    .page.visible { opacity: 1; transition: opacity 0.4s ease; }
 
     @media (max-width: 480px) {
       .page { padding: 24px 14px 60px; }
@@ -261,6 +279,10 @@
   </style>
 </head>
 <body>
+
+  <!-- FIREHOSE PAINT WIPE ELEMENTS -->
+  <div id="paintOverlay"></div>
+  <div id="flyLogo"><img src="https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png" alt=""></div>
 
   <div class="age-gate" id="ageGate">
     <div class="age-gate-inner">
@@ -350,15 +372,98 @@
   </div>
 
   <script>
+    function runIntro() {
+      const fly    = document.getElementById('flyLogo');
+      const paint  = document.getElementById('paintOverlay');
+      const page   = document.getElementById('mainPage');
+
+      // Utility: animate with Web Animations API or fallback via requestAnimationFrame
+      function tween(el, keyframes, options) {
+        return el.animate(keyframes, { fill: 'forwards', ...options }).finished;
+      }
+
+      async function sequence() {
+        // ── STAGE 1: Logo blasts in from a tiny dot ──
+        // Start: tiny, center screen, invisible
+        fly.style.opacity = '1';
+        await tween(fly, [
+          { transform: 'translate(-50%, -50%) scale(0.02)', filter: 'drop-shadow(0 0 0px white)', offset: 0 },
+          { transform: 'translate(-50%, -50%) scale(0.08)', filter: 'drop-shadow(0 0 20px white)', offset: 0.15 },
+          { transform: 'translate(-50%, -50%) scale(0.5)',  filter: 'drop-shadow(0 0 60px white)', offset: 0.5 },
+          { transform: 'translate(-50%, -50%) scale(1.6)',  filter: 'drop-shadow(0 0 120px white)', offset: 0.85 },
+          { transform: 'translate(-50%, -50%) scale(2.2)', filter: 'drop-shadow(0 0 180px white)', offset: 1 },
+        ], { duration: 600, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' });
+
+        // ── STAGE 2: White paint SPLAT — floods in from center ──
+        paint.style.transform = 'translateY(0)';
+        paint.style.borderRadius = '50%';
+        paint.style.inset = '50% 50%';
+        paint.style.width = '0'; paint.style.height = '0';
+        paint.style.left = '50%'; paint.style.top = '50%';
+        paint.style.transform = 'translate(-50%, -50%)';
+        paint.style.opacity = '1';
+        paint.style.position = 'fixed';
+
+        await tween(paint, [
+          { width: '0px',    height: '0px',    borderRadius: '50%', opacity: 1,   offset: 0 },
+          { width: '200vmax', height: '200vmax', borderRadius: '50%', opacity: 1, offset: 0.6 },
+          { width: '200vmax', height: '200vmax', borderRadius: '0%',  opacity: 1, offset: 1 },
+        ], { duration: 380, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' });
+
+        // ── STAGE 3: Logo slides DOWN wiping paint off screen ──
+        // Move fly logo to top of screen so it leads the wipe
+        fly.style.top = '0';
+        fly.style.left = '50%';
+
+        // Wipe: logo slides from top → bottom, dragging paint with it
+        // Paint follows as a clip that retreats upward
+        const wipePromise = tween(fly, [
+          { transform: 'translate(-50%, -30px) scale(1.4)', offset: 0 },
+          { transform: 'translate(-50%, 110vh) scale(1.1)', offset: 1 },
+        ], { duration: 700, easing: 'cubic-bezier(0.55, 0, 0.45, 1)' });
+
+        // Paint gets pushed down and off screen
+        await tween(paint, [
+          { clipPath: 'inset(0 0 0 0)',       offset: 0 },
+          { clipPath: 'inset(100% 0 0 0)',    offset: 1 },
+        ], { duration: 700, easing: 'cubic-bezier(0.55, 0, 0.45, 1)' });
+
+        await wipePromise;
+
+        // ── STAGE 4: Show page, logo reappears in header ──
+        page.classList.add('visible');
+        paint.style.opacity = '0';
+
+        // Logo flies back up from bottom to sit quietly in header card
+        fly.style.top  = '50%';
+        fly.style.left = '50%';
+        await tween(fly, [
+          { transform: 'translate(-50%, 110vh) scale(1.1)', opacity: 1, offset: 0 },
+          { transform: 'translate(-50%, -50%) scale(1)',    opacity: 0, offset: 1 },
+        ], { duration: 500, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' });
+
+        fly.style.display = 'none';
+        paint.style.display = 'none';
+      }
+
+      sequence().catch(() => {
+        // Fallback: just show the page
+        document.getElementById('mainPage').classList.add('visible');
+        fly.style.display = 'none';
+        paint.style.display = 'none';
+      });
+    }
+
     function dismiss() {
       document.getElementById('ageGate').classList.add('dismissed');
-      document.getElementById('mainPage').classList.add('visible');
+      runIntro();
       try { sessionStorage.setItem('wk_age_ok', '1'); } catch(e) {}
     }
+
     try {
       if (sessionStorage.getItem('wk_age_ok') === '1') {
         document.getElementById('ageGate').classList.add('dismissed');
-        document.getElementById('mainPage').classList.add('visible');
+        runIntro();
       }
     } catch(e) {}
   </script>
