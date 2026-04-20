@@ -11,672 +11,549 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Anton&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --ink:   #1a1209;
-      --paper: #e8dfc8;
-      --red:   #8b1a1a;
-      --glass: rgba(232,223,200,0.78);
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html, body {
-      min-height: 100%;
-      color: var(--ink);
-      font-family: 'Space Grotesk', sans-serif;
-      overflow-x: hidden;
-    }
+    :root { --ink:#1a1209; --paper:#e8dfc8; --red:#8b1a1a; --glass:rgba(232,223,200,0.78); }
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html,body { min-height:100%; color:var(--ink); font-family:'Space Grotesk',sans-serif; overflow-x:hidden; }
     body {
-      background-color: var(--paper);
-      background-image: url('https://wildkindness-cdn.b-cdn.net/bg-pattern.png');
-      background-repeat: repeat;
-      background-size: 300px auto;
-      background-attachment: fixed;
+      background-color:var(--paper);
+      background-image:url('https://wildkindness-cdn.b-cdn.net/bg-pattern.png');
+      background-repeat:repeat; background-size:300px auto; background-attachment:fixed;
     }
-
-    /* INTRO CANVAS — fullscreen, on top of everything */
-    #introCanvas {
-      position: fixed;
-      inset: 0;
-      z-index: 9000;
-      pointer-events: none;
-      width: 100%;
-      height: 100%;
-    }
-
-    /* AGE GATE */
+    #introCanvas { position:fixed; inset:0; z-index:9000; pointer-events:none; width:100%; height:100%; display:none; }
     .age-gate {
-      position: fixed; inset: 0; z-index: 9999;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 40px 24px; text-align: center;
-      background-color: var(--paper);
-      background-image: url('https://wildkindness-cdn.b-cdn.net/bg-pattern.png');
-      background-repeat: repeat;
-      background-size: 300px auto;
-      transition: opacity 0.5s ease, visibility 0.5s ease;
+      position:fixed; inset:0; z-index:9999;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      padding:40px 24px; text-align:center;
+      background-color:var(--paper);
+      background-image:url('https://wildkindness-cdn.b-cdn.net/bg-pattern.png');
+      background-repeat:repeat; background-size:300px auto;
+      transition:opacity 0.5s ease, visibility 0.5s ease;
     }
-    .age-gate.dismissed { opacity: 0; visibility: hidden; pointer-events: none; }
+    .age-gate.dismissed { opacity:0; visibility:hidden; pointer-events:none; }
     .age-gate-inner {
-      border: 3px double var(--ink);
-      padding: 36px 44px; max-width: 400px; width: 100%;
-      position: relative;
-      backdrop-filter: blur(16px) saturate(0.85);
-      -webkit-backdrop-filter: blur(16px) saturate(0.85);
-      background: var(--glass);
+      border:3px double var(--ink); padding:36px 44px; max-width:400px; width:100%;
+      position:relative;
+      backdrop-filter:blur(16px) saturate(0.85); -webkit-backdrop-filter:blur(16px) saturate(0.85);
+      background:var(--glass);
     }
-    .age-gate-inner::before {
-      content: ''; position: absolute; inset: 5px;
-      border: 1px solid rgba(26,18,9,0.3); pointer-events: none;
-    }
-    .age-gate-logo {
-      width: 80px; height: 80px; object-fit: contain;
-      margin-bottom: 14px;
-      filter: sepia(0.4) contrast(1.1) brightness(0.9);
-    }
-    .age-gate h2 {
-      font-family: 'UnifrakturMaguntia', cursive;
-      font-size: clamp(24px, 6vw, 34px);
-      margin-bottom: 8px; color: var(--ink); line-height: 1.1;
-    }
-    .age-gate p {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 11px; color: var(--ink);
-      letter-spacing: 0.08em; line-height: 1.6;
-      margin-bottom: 24px; opacity: 0.7;
-    }
-    .age-btn {
-      display: inline-block; padding: 10px 36px;
-      background: var(--ink); color: var(--paper);
-      font-family: 'Anton', sans-serif;
-      font-size: 14px; letter-spacing: 0.15em; text-transform: uppercase;
-      cursor: pointer; border: 2px solid var(--ink);
-      transition: background 0.2s; -webkit-appearance: none;
-    }
-    .age-btn:hover { background: var(--red); border-color: var(--red); }
-    .age-gate-note {
-      margin-top: 12px; font-family: 'Space Grotesk', sans-serif;
-      font-size: 9px; letter-spacing: 0.1em; opacity: 0.35; text-transform: uppercase;
-    }
-
-    /* MAIN PAGE */
-    .page {
-      max-width: 520px; margin: 0 auto;
-      padding: 40px 20px 60px;
-      opacity: 0;
-      display: flex; flex-direction: column; gap: 10px;
-    }
-    .page.visible { opacity: 1; transition: opacity 0.5s ease; }
-
-    /* HEADER CARD */
+    .age-gate-inner::before { content:''; position:absolute; inset:5px; border:1px solid rgba(26,18,9,0.3); pointer-events:none; }
+    .age-gate-logo { width:80px; height:80px; object-fit:contain; margin-bottom:14px; filter:sepia(0.4) contrast(1.1) brightness(0.9); }
+    .age-gate h2 { font-family:'UnifrakturMaguntia',cursive; font-size:clamp(24px,6vw,34px); margin-bottom:8px; color:var(--ink); line-height:1.1; }
+    .age-gate p { font-family:'Space Grotesk',sans-serif; font-size:11px; color:var(--ink); letter-spacing:0.08em; line-height:1.6; margin-bottom:24px; opacity:0.7; }
+    .age-btn { display:inline-block; padding:10px 36px; background:var(--ink); color:var(--paper); font-family:'Anton',sans-serif; font-size:14px; letter-spacing:0.15em; text-transform:uppercase; cursor:pointer; border:2px solid var(--ink); transition:background 0.2s; -webkit-appearance:none; }
+    .age-btn:hover { background:var(--red); border-color:var(--red); }
+    .age-gate-note { margin-top:12px; font-family:'Space Grotesk',sans-serif; font-size:9px; letter-spacing:0.1em; opacity:0.35; text-transform:uppercase; }
+    .page { max-width:520px; margin:0 auto; padding:40px 20px 60px; opacity:0; display:flex; flex-direction:column; gap:10px; }
+    .page.visible { opacity:1; transition:opacity 0.5s ease; }
     .header-card {
-      backdrop-filter: blur(16px) saturate(0.85);
-      -webkit-backdrop-filter: blur(16px) saturate(0.85);
-      background: var(--glass);
-      border: 1.5px solid rgba(26,18,9,0.3);
-      padding: 24px 20px 20px;
-      display: flex; flex-direction: column; align-items: center;
-      text-align: center; position: relative;
+      backdrop-filter:blur(16px) saturate(0.85); -webkit-backdrop-filter:blur(16px) saturate(0.85);
+      background:var(--glass); border:1.5px solid rgba(26,18,9,0.3);
+      padding:24px 20px 20px; display:flex; flex-direction:column; align-items:center; text-align:center; position:relative;
     }
-    .header-card::after {
-      content: ''; position: absolute; inset: 4px;
-      border: 0.5px solid rgba(26,18,9,0.12); pointer-events: none;
-    }
-
-    .logo-wrapper {
-      position: relative; width: 50%; aspect-ratio: 1;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 12px;
-    }
-    .logo-glow {
-      position: absolute; inset: -14px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(139,26,26,0.3) 0%, transparent 70%);
-      animation: heartGlow 3.2s ease-in-out infinite;
-    }
-    @keyframes heartGlow {
-      0%   { opacity: 0.2; transform: scale(0.98); }
-      7%   { opacity: 0.65; transform: scale(1.06); }
-      14%  { opacity: 0.2; transform: scale(1.0); }
-      21%  { opacity: 0.5; transform: scale(1.04); }
-      35%  { opacity: 0.2; transform: scale(0.98); }
-      100% { opacity: 0.2; transform: scale(0.98); }
-    }
-    .logo {
-      width: 100%; height: 100%; object-fit: contain;
-      position: relative; z-index: 2;
-      filter: sepia(0.3) contrast(1.1) brightness(0.9);
-      animation: heartbeat 3.2s ease-in-out infinite;
-    }
-    @keyframes heartbeat {
-      0%   { transform: scale(1); }
-      7%   { transform: scale(1.07); }
-      14%  { transform: scale(1.0); }
-      21%  { transform: scale(1.05); }
-      35%  { transform: scale(1); }
-      100% { transform: scale(1); }
-    }
-    .masthead-tag {
-      font-family: 'Anton', sans-serif;
-      font-size: clamp(11px, 2.8vw, 14px);
-      letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--ink); opacity: 0.7; line-height: 1.5;
-    }
-    .masthead-sub {
-      font-family: 'Space Grotesk', sans-serif; font-style: italic;
-      font-size: clamp(9px, 2vw, 11px);
-      opacity: 0.5; letter-spacing: 0.06em; margin-top: 2px;
-    }
-
-    /* LINKS BOX */
-    .links-box {
-      backdrop-filter: blur(16px) saturate(0.85);
-      -webkit-backdrop-filter: blur(16px) saturate(0.85);
-      background: var(--glass);
-      border: 1.5px solid rgba(26,18,9,0.3);
-      position: relative;
-    }
-    .links-box::after {
-      content: ''; position: absolute; inset: 4px;
-      border: 0.5px solid rgba(26,18,9,0.12); pointer-events: none;
-    }
-    .link-btn {
-      display: flex; align-items: center; gap: 12px;
-      width: 100%; padding: 11px 16px;
-      border-bottom: 1px solid rgba(26,18,9,0.1);
-      color: var(--ink); text-decoration: none;
-      font-family: 'Anton', sans-serif;
-      font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase;
-      transition: background 0.15s, padding-left 0.15s;
-      cursor: pointer; position: relative; z-index: 1;
-    }
-    .link-btn:last-child { border-bottom: none; }
-    .link-btn:hover { background: rgba(26,18,9,0.07); padding-left: 22px; }
-    .link-icon {
-      width: 26px; height: 26px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center; opacity: 0.6;
-    }
-    .link-icon svg { width: 17px; height: 17px; fill: var(--ink); }
-    .link-icon.emoji { font-size: 15px; filter: grayscale(1) sepia(0.4) brightness(0.4); }
-    .link-label { flex: 1; }
-    .link-arrow { font-size: 11px; opacity: 0.25; transition: opacity 0.2s, transform 0.2s; }
-    .link-btn:hover .link-arrow { opacity: 0.6; transform: translateX(3px); }
-    .soon-badge {
-      font-size: 7px; letter-spacing: 0.15em; text-transform: uppercase;
-      opacity: 0.35; font-family: 'Space Grotesk', sans-serif;
-      border: 1px solid var(--ink); padding: 2px 5px;
-    }
-
-    .colophon { text-align: center; padding-top: 4px; }
-    .colophon p {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 8px; letter-spacing: 0.15em;
-      text-transform: uppercase; opacity: 0.3;
-    }
-
-    @media (max-width: 480px) { .page { padding: 24px 14px 60px; } }
-    @supports (padding-bottom: env(safe-area-inset-bottom)) {
-      .page { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
-    }
+    .header-card::after { content:''; position:absolute; inset:4px; border:0.5px solid rgba(26,18,9,0.12); pointer-events:none; }
+    .logo-wrapper { position:relative; width:50%; aspect-ratio:1; display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
+    .logo-glow { position:absolute; inset:-14px; border-radius:50%; background:radial-gradient(circle,rgba(139,26,26,0.3) 0%,transparent 70%); animation:heartGlow 3.2s ease-in-out infinite; }
+    @keyframes heartGlow { 0%{opacity:0.2;transform:scale(0.98)} 7%{opacity:0.65;transform:scale(1.06)} 14%{opacity:0.2;transform:scale(1)} 21%{opacity:0.5;transform:scale(1.04)} 35%{opacity:0.2;transform:scale(0.98)} 100%{opacity:0.2;transform:scale(0.98)} }
+    .logo { width:100%; height:100%; object-fit:contain; position:relative; z-index:2; filter:sepia(0.3) contrast(1.1) brightness(0.9); animation:heartbeat 3.2s ease-in-out infinite; }
+    @keyframes heartbeat { 0%{transform:scale(1)} 7%{transform:scale(1.07)} 14%{transform:scale(1)} 21%{transform:scale(1.05)} 35%{transform:scale(1)} 100%{transform:scale(1)} }
+    .masthead-tag { font-family:'Anton',sans-serif; font-size:clamp(11px,2.8vw,14px); letter-spacing:0.1em; text-transform:uppercase; color:var(--ink); opacity:0.7; line-height:1.5; }
+    .masthead-sub { font-family:'Space Grotesk',sans-serif; font-style:italic; font-size:clamp(9px,2vw,11px); opacity:0.5; letter-spacing:0.06em; margin-top:2px; }
+    .links-box { backdrop-filter:blur(16px) saturate(0.85); -webkit-backdrop-filter:blur(16px) saturate(0.85); background:var(--glass); border:1.5px solid rgba(26,18,9,0.3); position:relative; }
+    .links-box::after { content:''; position:absolute; inset:4px; border:0.5px solid rgba(26,18,9,0.12); pointer-events:none; }
+    .link-btn { display:flex; align-items:center; gap:12px; width:100%; padding:11px 16px; border-bottom:1px solid rgba(26,18,9,0.1); color:var(--ink); text-decoration:none; font-family:'Anton',sans-serif; font-size:14px; letter-spacing:0.08em; text-transform:uppercase; transition:background 0.15s,padding-left 0.15s; cursor:pointer; position:relative; z-index:1; }
+    .link-btn:last-child { border-bottom:none; }
+    .link-btn:hover { background:rgba(26,18,9,0.07); padding-left:22px; }
+    .link-icon { width:26px; height:26px; flex-shrink:0; display:flex; align-items:center; justify-content:center; opacity:0.6; }
+    .link-icon svg { width:17px; height:17px; fill:var(--ink); }
+    .link-icon.emoji { font-size:15px; filter:grayscale(1) sepia(0.4) brightness(0.4); }
+    .link-label { flex:1; }
+    .link-arrow { font-size:11px; opacity:0.25; transition:opacity 0.2s,transform 0.2s; }
+    .link-btn:hover .link-arrow { opacity:0.6; transform:translateX(3px); }
+    .soon-badge { font-size:7px; letter-spacing:0.15em; text-transform:uppercase; opacity:0.35; font-family:'Space Grotesk',sans-serif; border:1px solid var(--ink); padding:2px 5px; }
+    .colophon { text-align:center; padding-top:4px; }
+    .colophon p { font-family:'Space Grotesk',sans-serif; font-size:8px; letter-spacing:0.15em; text-transform:uppercase; opacity:0.3; }
+    @media (max-width:480px) { .page { padding:24px 14px 60px; } }
+    @supports (padding-bottom:env(safe-area-inset-bottom)) { .page { padding-bottom:calc(60px + env(safe-area-inset-bottom)); } }
   </style>
 </head>
 <body>
 
-  <canvas id="introCanvas"></canvas>
+<canvas id="introCanvas"></canvas>
 
-  <div class="age-gate" id="ageGate">
-    <div class="age-gate-inner">
-      <img src="https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png" alt="Wild Kindness" class="age-gate-logo">
-      <h2>Adults Only</h2>
-      <p>This page contains links to adult content.<br>You must be 18 or older to continue.</p>
-      <button class="age-btn" onclick="dismiss()">I am 18 &mdash; Enter</button>
-      <p class="age-gate-note">By entering you confirm you are of legal age</p>
-    </div>
+<div class="age-gate" id="ageGate">
+  <div class="age-gate-inner">
+    <img src="https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png" alt="Wild Kindness" class="age-gate-logo">
+    <h2>Adults Only</h2>
+    <p>This page contains links to adult content.<br>You must be 18 or older to continue.</p>
+    <button class="age-btn" onclick="dismiss()">I am 18 &mdash; Enter</button>
+    <p class="age-gate-note">By entering you confirm you are of legal age</p>
   </div>
+</div>
 
-  <div class="page" id="mainPage">
-    <div class="header-card">
-      <div class="logo-wrapper">
-        <div class="logo-glow"></div>
-        <img src="https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png" alt="Wild Kindness" class="logo">
-      </div>
-      <p class="masthead-tag">Hung. Bubble Butt. Squirter.</p>
-      <p class="masthead-sub">Serving SF Bay Area &amp; Beyond</p>
+<div class="page" id="mainPage">
+  <div class="header-card">
+    <div class="logo-wrapper">
+      <div class="logo-glow"></div>
+      <img src="https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png" alt="Wild Kindness" class="logo">
     </div>
-
-    <div class="links-box">
-      <a href="tel:+19258979008" class="link-btn">
-        <span class="link-icon emoji">📞</span>
-        <span class="link-label">Call Me</span>
-        <span class="link-arrow">&#8594;</span>
-      </a>
-      <a href="sms:+19258979008" class="link-btn">
-        <span class="link-icon emoji">💬</span>
-        <span class="link-label">Text Me</span>
-        <span class="link-arrow">&#8594;</span>
-      </a>
-      <a href="https://onlyfans.com/wildkindness69" target="_blank" rel="noopener" class="link-btn">
-        <span class="link-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 4.5c4.142 0 7.5 3.358 7.5 7.5s-3.358 7.5-7.5 7.5S4.5 16.142 4.5 12 7.858 4.5 12 4.5zm0 2.25A5.25 5.25 0 1 0 17.25 12 5.257 5.257 0 0 0 12 6.75zm0 2.25A3 3 0 1 1 9 12a3 3 0 0 1 3-3z"/></svg></span>
-        <span class="link-label">OnlyFans</span>
-        <span class="link-arrow">&#8594;</span>
-      </a>
-      <a href="https://bsky.app/profile/wildkindness69.bsky.social" target="_blank" rel="noopener" class="link-btn">
-        <span class="link-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.056-3.912.58-7.387 2.005-2.83 7.078 5.013 5.19 6.87-1.113 7.823-4.308.953 3.195 2.05 9.271 7.733 4.308 4.267-4.308 1.172-6.498-2.74-7.078a8.741 8.741 0 0 1-.415-.056c.14.017.279.036.415.056 2.67.297 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.861-.902-2.204-.659-.299-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8z"/></svg></span>
-        <span class="link-label">Bluesky</span>
-        <span class="link-arrow">&#8594;</span>
-      </a>
-      <div class="link-btn" style="opacity:0.3;cursor:not-allowed;pointer-events:none;">
-        <span class="link-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span>
-        <span class="link-label">Twitter / X</span>
-        <span class="soon-badge">Coming Soon</span>
-      </div>
-      <a href="https://signal.me/#eu/j5o7xP5G6jN6eI9y8lLNLUB-8MszXPiWd9N" target="_blank" rel="noopener" class="link-btn">
-        <span class="link-icon"><svg fill="currentColor" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><g><path d="M26.6,16c-0.2,4-1.9,7.2-5.5,9.2c-1.8,1-3.7,1.4-5.8,1.3c-1.7-0.1-3.3-0.6-4.7-1.5C10.4,25,10.3,25,10.1,25c-1.3,0.3-2.5,0.6-3.8,0.9c-0.2,0.1-0.3,0-0.2-0.2c0.3-1.3,0.6-2.5,0.9-3.8c0-0.2,0-0.3-0.1-0.5c-3.8-6.3,0-14.6,7.3-15.8c5.7-1,11.2,2.8,12.2,8.6C26.5,14.8,26.6,15.4,26.6,16L26.6,16z"/><path d="M4.6,28.6c-0.8,0-1.4-0.7-1.2-1.4c0.2-0.8,0.4-1.6,0.6-2.5c0-0.1,0.1-0.1,0.2-0.1c0.3,0.1,0.6,0.1,0.9,0.2c0.2,0,0.1,0.1,0.1,0.2c-0.1,0.7-0.3,1.3-0.5,2c-0.1,0.3-0.1,0.3,0.3,0.2c0.7-0.1,1.3-0.3,2-0.5c0.2,0,0.2,0,0.3,0.2c0,0.3,0.1,0.5,0.2,0.8c0,0.1,0,0.2-0.1,0.2C6.4,28.2,5.6,28.4,4.6,28.6z"/><path d="M3,16c0-0.6,0-1.1,0.1-1.7c0-0.2,0.1-0.2,0.3-0.2c0.2,0,0.5,0.1,0.8,0.1c0.1,0,0.2,0.1,0.2,0.2c-0.1,1.1-0.1,2.1,0,3.2c0,0.1,0,0.2-0.1,0.2c-0.3,0-0.6,0.1-0.9,0.1c-0.2,0-0.2-0.1-0.2-0.2C3,17.2,3,16.6,3,16z"/><path d="M29,16c0,0.6,0,1.1-0.1,1.7c0,0.2-0.1,0.2-0.3,0.2c-0.2,0-0.5-0.1-0.7-0.1c-0.3,0-0.3,0-0.2-0.3c0.1-0.9,0.1-1.7,0-2.6c0-0.1,0-0.3,0-0.5c0-0.1,0-0.2,0.2-0.2c0.3,0,0.5-0.1,0.8-0.1c0.2,0,0.2,0,0.2,0.2C29,14.8,29,15.4,29,16z"/><path d="M16,3c0.5,0,1.1,0,1.7,0.1c0.2,0,0.2,0.1,0.2,0.3c0,0.2-0.1,0.5-0.1,0.7c0,0.1-0.1,0.2-0.2,0.2c-1-0.1-2.1-0.1-3.1,0c-0.2,0-0.2,0-0.2-0.2c0-0.3-0.1-0.5-0.1-0.8c0-0.1,0-0.2,0.2-0.2C14.8,3,15.4,3,16,3z"/><path d="M16,29c-0.6,0-1.2,0-1.8-0.1c-0.2,0-0.2-0.1-0.2-0.3c0-0.2,0.1-0.5,0.1-0.8c0-0.1,0.1-0.2,0.2-0.2c1.1,0.1,2.1,0.1,3.2,0c0.1,0,0.2,0,0.2,0.2c0,0.3,0.1,0.6,0.1,0.8c0,0.2-0.1,0.2-0.2,0.2C17.2,29,16.6,29,16,29z"/></g></svg></span>
-        <span class="link-label">Signal</span>
-        <span class="link-arrow">&#8594;</span>
-      </a>
-      <a href="https://wa.me/19258979008" target="_blank" rel="noopener" class="link-btn">
-        <span class="link-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg></span>
-        <span class="link-label">WhatsApp</span>
-        <span class="link-arrow">&#8594;</span>
-      </a>
-      <a href="https://t.me/wildkindness69" target="_blank" rel="noopener" class="link-btn">
-        <span class="link-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></span>
-        <span class="link-label">Telegram</span>
-        <span class="link-arrow">&#8594;</span>
-      </a>
-      <a href="https://www.wildkindness69.com" target="_blank" rel="noopener" class="link-btn">
-        <span class="link-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.22.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></span>
-        <span class="link-label">Website</span>
-        <span class="link-arrow">&#8594;</span>
-      </a>
-    </div>
-
-    <footer class="colophon">
-      <p>&copy; 2026 Wild Kindness &nbsp;&middot;&nbsp; San Francisco, CA</p>
-    </footer>
+    <p class="masthead-tag">Hung. Bubble Butt. Squirter.</p>
+    <p class="masthead-sub">Serving SF Bay Area &amp; Beyond</p>
   </div>
+  <div class="links-box">
+    <a href="tel:+19258979008" class="link-btn"><span class="link-icon emoji">📞</span><span class="link-label">Call Me</span><span class="link-arrow">&#8594;</span></a>
+    <a href="sms:+19258979008" class="link-btn"><span class="link-icon emoji">💬</span><span class="link-label">Text Me</span><span class="link-arrow">&#8594;</span></a>
+    <a href="https://onlyfans.com/wildkindness69" target="_blank" rel="noopener" class="link-btn"><span class="link-icon"><svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 4.5c4.142 0 7.5 3.358 7.5 7.5s-3.358 7.5-7.5 7.5S4.5 16.142 4.5 12 7.858 4.5 12 4.5zm0 2.25A5.25 5.25 0 1 0 17.25 12 5.257 5.257 0 0 0 12 6.75zm0 2.25A3 3 0 1 1 9 12a3 3 0 0 1 3-3z"/></svg></span><span class="link-label">OnlyFans</span><span class="link-arrow">&#8594;</span></a>
+    <a href="https://bsky.app/profile/wildkindness69.bsky.social" target="_blank" rel="noopener" class="link-btn"><span class="link-icon"><svg viewBox="0 0 24 24"><path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.056-3.912.58-7.387 2.005-2.83 7.078 5.013 5.19 6.87-1.113 7.823-4.308.953 3.195 2.05 9.271 7.733 4.308 4.267-4.308 1.172-6.498-2.74-7.078a8.741 8.741 0 0 1-.415-.056c.14.017.279.036.415.056 2.67.297 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.861-.902-2.204-.659-.299-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8z"/></svg></span><span class="link-label">Bluesky</span><span class="link-arrow">&#8594;</span></a>
+    <div class="link-btn" style="opacity:0.3;cursor:not-allowed;pointer-events:none;"><span class="link-icon"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span><span class="link-label">Twitter / X</span><span class="soon-badge">Coming Soon</span></div>
+    <a href="https://signal.me/#eu/j5o7xP5G6jN6eI9y8lLNLUB-8MszXPiWd9N" target="_blank" rel="noopener" class="link-btn"><span class="link-icon"><svg fill="currentColor" viewBox="0 0 32 32"><g><path d="M26.6,16c-0.2,4-1.9,7.2-5.5,9.2c-1.8,1-3.7,1.4-5.8,1.3c-1.7-0.1-3.3-0.6-4.7-1.5C10.4,25,10.3,25,10.1,25c-1.3,0.3-2.5,0.6-3.8,0.9c-0.2,0.1-0.3,0-0.2-0.2c0.3-1.3,0.6-2.5,0.9-3.8c0-0.2,0-0.3-0.1-0.5c-3.8-6.3,0-14.6,7.3-15.8c5.7-1,11.2,2.8,12.2,8.6C26.5,14.8,26.6,15.4,26.6,16z"/><path d="M4.6,28.6c-0.8,0-1.4-0.7-1.2-1.4c0.2-0.8,0.4-1.6,0.6-2.5c0-0.1,0.1-0.1,0.2-0.1c0.3,0.1,0.6,0.1,0.9,0.2c0.2,0,0.1,0.1,0.1,0.2c-0.1,0.7-0.3,1.3-0.5,2c-0.1,0.3-0.1,0.3,0.3,0.2c0.7-0.1,1.3-0.3,2-0.5c0.2,0,0.2,0,0.3,0.2c0,0.3,0.1,0.5,0.2,0.8c0,0.1,0,0.2-0.1,0.2C6.4,28.2,5.6,28.4,4.6,28.6z"/><path d="M3,16c0-0.6,0-1.1,0.1-1.7c0-0.2,0.1-0.2,0.3-0.2c0.2,0,0.5,0.1,0.8,0.1c0.1,0,0.2,0.1,0.2,0.2c-0.1,1.1-0.1,2.1,0,3.2c0,0.1,0,0.2-0.1,0.2c-0.3,0-0.6,0.1-0.9,0.1c-0.2,0-0.2-0.1-0.2-0.2C3,17.2,3,16.6,3,16z"/><path d="M29,16c0,0.6,0,1.1-0.1,1.7c0,0.2-0.1,0.2-0.3,0.2c-0.2,0-0.5-0.1-0.7-0.1c-0.3,0-0.3,0-0.2-0.3c0.1-0.9,0.1-1.7,0-2.6c0-0.1,0-0.3,0-0.5c0-0.1,0-0.2,0.2-0.2c0.3,0,0.5-0.1,0.8-0.1c0.2,0,0.2,0,0.2,0.2C29,14.8,29,15.4,29,16z"/><path d="M16,3c0.5,0,1.1,0,1.7,0.1c0.2,0,0.2,0.1,0.2,0.3c0,0.2-0.1,0.5-0.1,0.7c0,0.1-0.1,0.2-0.2,0.2c-1-0.1-2.1-0.1-3.1,0c-0.2,0-0.2,0-0.2-0.2c0-0.3-0.1-0.5-0.1-0.8c0-0.1,0-0.2,0.2-0.2C14.8,3,15.4,3,16,3z"/><path d="M16,29c-0.6,0-1.2,0-1.8-0.1c-0.2,0-0.2-0.1-0.2-0.3c0-0.2,0.1-0.5,0.1-0.8c0-0.1,0.1-0.2,0.2-0.2c1.1,0.1,2.1,0.1,3.2,0c0.1,0,0.2,0,0.2,0.2c0,0.3,0.1,0.6,0.1,0.8c0,0.2-0.1,0.2-0.2,0.2C17.2,29,16.6,29,16,29z"/></g></svg></span><span class="link-label">Signal</span><span class="link-arrow">&#8594;</span></a>
+    <a href="https://wa.me/19258979008" target="_blank" rel="noopener" class="link-btn"><span class="link-icon"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg></span><span class="link-label">WhatsApp</span><span class="link-arrow">&#8594;</span></a>
+    <a href="https://t.me/wildkindness69" target="_blank" rel="noopener" class="link-btn"><span class="link-icon"><svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></span><span class="link-label">Telegram</span><span class="link-arrow">&#8594;</span></a>
+    <a href="https://www.wildkindness69.com" target="_blank" rel="noopener" class="link-btn"><span class="link-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.22.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></span><span class="link-label">Website</span><span class="link-arrow">&#8594;</span></a>
+  </div>
+  <footer class="colophon"><p>&copy; 2026 Wild Kindness &nbsp;&middot;&nbsp; San Francisco, CA</p></footer>
+</div>
 
-  <script>
-  // ═══════════════════════════════════════════════════
-  // FIREHOSE PHYSICS ENGINE
-  // ═══════════════════════════════════════════════════
-  const canvas = document.getElementById('introCanvas');
-  const ctx = canvas.getContext('2d');
-  let W, H, cx, cy;
-  let running = false;
-  let logoImg = null;
-  let phase = 'idle'; // idle → paintShoot → logoShoot → wipe → done
-  let startTime = 0;
-  let rafId = null;
+<script>
+// ═══════════════════════════════════════════════
+// PAINT PHYSICS ENGINE
+// ═══════════════════════════════════════════════
+const canvas = document.getElementById('introCanvas');
+const ctx    = canvas.getContext('2d');
+let W, H, cx, cy;
 
-  // Perspective helpers
-  // z=0 = horizon (center), z=1 = screen surface
-  function project(x3d, y3d, z) {
-    const fov = 600;
-    const scale = fov / (fov + (1 - z) * 2000);
+// Offscreen paint accumulation canvas
+const paintCanvas = document.createElement('canvas');
+const pctx        = paintCanvas.getContext('2d');
+
+let logoImg   = null;
+let running   = false;
+let phase     = 'idle'; // shoot → flood → logoSlam → wipe → done
+let phaseTime = 0;
+
+// All live paint blobs
+let blobs    = [];
+// All splat marks (permanent paint on screen)
+let splats   = [];
+// All falling drips
+let drips    = [];
+// Logo state
+let logo = null;
+
+const r = () => Math.random();
+const rr = (a, b) => a + r() * (b - a);
+
+// ─── BLOB ────────────────────────────────────────
+// Each blob flies from the center vanishing point toward viewer
+class Blob {
+  constructor(delay) {
+    this.delay  = delay;
+    this.alive  = true;
+    this.hit    = false;
+    // perspective z: 0=far, 1=screen
+    this.z      = 0;
+    this.vz     = rr(0.007, 0.018);
+    // wobble offset from center
+    this.ox     = rr(-80, 80);
+    this.oy     = rr(-120, 80);
+    // wobble oscillation
+    this.wx     = r() * Math.PI * 2;
+    this.wy     = r() * Math.PI * 2;
+    this.wsx    = rr(0.06, 0.14);
+    this.wsy    = rr(0.05, 0.11);
+    this.wax    = rr(20, 80);
+    this.way    = rr(15, 50);
+    // size
+    this.baseR  = rr(18, 80);
+    // trail of past positions
+    this.trail  = [];
+    this.born   = false;
+  }
+
+  screenPos() {
+    const fov   = 500;
+    const scale = fov / (fov + (1 - this.z) * 1800);
+    const wobX  = Math.sin(this.wx) * this.wax * (1 - this.z * 0.7);
+    const wobY  = Math.sin(this.wy) * this.way * (1 - this.z * 0.7);
     return {
-      x: cx + x3d * scale,
-      y: cy + y3d * scale,
+      x: cx + (this.ox + wobX) * scale,
+      y: cy + (this.oy + wobY) * scale,
       s: scale
     };
   }
 
-  // ── PAINT GOBS ──────────────────────────────────────
-  class PaintGob {
-    constructor(delay) {
-      this.delay = delay;
-      this.reset();
+  update(t) {
+    if (t < this.delay) return;
+    this.born = true;
+    if (this.hit) return;
+    this.z  += this.vz * (1 + this.z * 5); // accelerate hard near end
+    this.wx += this.wsx;
+    this.wy += this.wsy;
+    const p = this.screenPos();
+    this.trail.push({ x: p.x, y: p.y, r: this.baseR * p.s * 0.6 });
+    if (this.trail.length > 20) this.trail.shift();
+    if (this.z >= 1) {
+      this.hit = true;
+      this.splat(p.x, p.y, this.baseR * p.s);
     }
-    reset() {
-      // Start tiny at center vanishing point
-      this.x = (Math.random() - 0.5) * 60;  // slight random offset from center
-      this.y = (Math.random() - 0.5) * 60;
-      this.z = 0.0; // starts at horizon
-      this.vz = 0.004 + Math.random() * 0.006; // speed toward camera
-      // Lateral drift — paint gobs wobble as they fly
-      this.vx = (Math.random() - 0.5) * 8;
-      this.vy = (Math.random() - 0.5) * 5;
-      // Wobble physics
-      this.wobbleX = Math.random() * Math.PI * 2;
-      this.wobbleY = Math.random() * Math.PI * 2;
-      this.wobbleSpeedX = 0.08 + Math.random() * 0.12;
-      this.wobbleSpeedY = 0.06 + Math.random() * 0.1;
-      this.wobbleAmpX = 15 + Math.random() * 40;
-      this.wobbleAmpY = 10 + Math.random() * 25;
-      // Appearance
-      this.baseR = 30 + Math.random() * 60; // base radius
-      this.alpha = 0;
-      this.splattered = false;
-      this.splatTime = 0;
-      this.splatX = 0;
-      this.splatY = 0;
-      // Trailing drips
-      this.trail = [];
-      this.active = false;
-      this.born = false;
+  }
+
+  splat(x, y, r) {
+    // Main blob mark on paint canvas
+    pctx.save();
+    pctx.globalAlpha = rr(0.85, 1);
+    // Draw organic blob using random bezier
+    pctx.beginPath();
+    const pts = 10 + Math.floor(r() * 8);
+    for (let i = 0; i <= pts; i++) {
+      const angle = (i / pts) * Math.PI * 2;
+      const jitter = rr(0.55, 1.35);
+      const rx = x + Math.cos(angle) * r * jitter;
+      const ry = y + Math.sin(angle) * r * jitter * rr(0.6, 1.2);
+      i === 0 ? pctx.moveTo(rx, ry) : pctx.lineTo(rx, ry);
     }
+    pctx.closePath();
+    pctx.fillStyle = 'white';
+    pctx.fill();
+    pctx.restore();
 
-    update(t) {
-      if (t < this.delay) return;
-      if (!this.born) { this.born = true; this.active = true; }
-      if (this.splattered) return;
+    // Secondary small satellite blobs
+    const count = 8 + Math.floor(r() * 14);
+    for (let i = 0; i < count; i++) {
+      const angle  = r() * Math.PI * 2;
+      const dist   = r() < 0.4 ? rr(r * 0.3, r * 0.9) : rr(r * 1.0, r * 3.5);
+      const sr     = rr(3, r * 0.5);
+      const sx     = x + Math.cos(angle) * dist;
+      const sy     = y + Math.sin(angle) * dist;
+      pctx.beginPath();
+      pctx.arc(sx, sy, sr, 0, Math.PI * 2);
+      pctx.fillStyle = `rgba(255,255,255,${rr(0.5, 1)})`;
+      pctx.fill();
 
-      this.z += this.vz * (1 + this.z * 3); // accelerate as it approaches
-      this.wobbleX += this.wobbleSpeedX;
-      this.wobbleY += this.wobbleSpeedY;
-
-      const wobX = Math.sin(this.wobbleX) * this.wobbleAmpX * (1 - this.z);
-      const wobY = Math.sin(this.wobbleY) * this.wobbleAmpY * (1 - this.z);
-
-      const proj = project(this.x + wobX, this.y + wobY, this.z);
-
-      // Store trail point
-      this.trail.push({ x: proj.x, y: proj.y, s: proj.s, alpha: 0.4 });
-      if (this.trail.length > 18) this.trail.shift();
-
-      this.alpha = Math.min(1, (this.z - 0) * 4);
-
-      if (this.z >= 1.0) {
-        this.splattered = true;
-        this.splatX = proj.x;
-        this.splatY = proj.y;
-        this.splatTime = t;
-        this.splatR = this.baseR * proj.s * 2.5;
+      // Some become drips
+      if (r() < 0.3 && sy < H * 0.92) {
+        drips.push(new Drip(sx, sy, sr * rr(0.4, 0.9)));
       }
     }
 
-    draw(t) {
-      if (!this.born) return;
+    // Drip strings from impact point
+    const dripCount = 3 + Math.floor(r() * 5);
+    for (let i = 0; i < dripCount; i++) {
+      const angle = rr(-Math.PI * 0.4, Math.PI * 1.4); // mostly downward
+      const dist  = rr(r * 0.2, r * 0.8);
+      drips.push(new Drip(
+        x + Math.cos(angle) * dist,
+        y + Math.sin(angle) * dist,
+        rr(4, 14)
+      ));
+    }
+  }
 
-      // Draw trail
-      for (let i = 0; i < this.trail.length; i++) {
-        const tp = this.trail[i];
-        const a = (i / this.trail.length) * 0.35;
-        const r = tp.s * this.baseR * 0.5 * (i / this.trail.length);
+  draw() {
+    if (!this.born) return;
+    if (this.hit) return;
+
+    // Trail — stretchy paint drip behind blob
+    for (let i = 1; i < this.trail.length; i++) {
+      const tp  = this.trail[i];
+      const pp  = this.trail[i - 1];
+      const a   = (i / this.trail.length) * 0.7;
+      const tr  = tp.r * (i / this.trail.length);
+      ctx.beginPath();
+      ctx.moveTo(pp.x, pp.y);
+      ctx.lineTo(tp.x, tp.y);
+      ctx.strokeStyle = `rgba(255,255,255,${a})`;
+      ctx.lineWidth   = tr * 1.8;
+      ctx.lineCap     = 'round';
+      ctx.stroke();
+
+      // Tiny satellite drips along trail
+      if (i % 3 === 0 && r() < 0.4) {
         ctx.beginPath();
-        ctx.arc(tp.x, tp.y, Math.max(2, r), 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${a})`;
+        ctx.arc(tp.x + rr(-tr, tr), tp.y + rr(-tr, tr), rr(2, tr * 0.5), 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${a * 0.6})`;
         ctx.fill();
       }
-
-      if (this.splattered) {
-        // Splat explosion
-        const age = t - this.splatTime;
-        const splatAlpha = Math.max(0, 1 - age * 0.8);
-        // Main splat
-        ctx.beginPath();
-        ctx.arc(this.splatX, this.splatY, this.splatR * (1 + age * 2), 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${splatAlpha * 0.9})`;
-        ctx.fill();
-        // Drip tendrils
-        for (let d = 0; d < 8; d++) {
-          const angle = (d / 8) * Math.PI * 2 + this.wobbleX;
-          const len = this.splatR * (0.5 + Math.random() * 0.5) * (1 + age * 1.5);
-          const tx = this.splatX + Math.cos(angle) * len;
-          const ty = this.splatY + Math.sin(angle) * len;
-          ctx.beginPath();
-          ctx.moveTo(this.splatX, this.splatY);
-          ctx.lineTo(tx, ty);
-          ctx.strokeStyle = `rgba(255,255,255,${splatAlpha * 0.5})`;
-          ctx.lineWidth = 3 + Math.random() * 6;
-          ctx.stroke();
-        }
-        return;
-      }
-
-      // Flying gob — draw as organic blob
-      const proj = project(
-        this.x + Math.sin(this.wobbleX) * this.wobbleAmpX * (1 - this.z),
-        this.y + Math.sin(this.wobbleY) * this.wobbleAmpY * (1 - this.z),
-        this.z
-      );
-      const r = this.baseR * proj.s;
-
-      // Squish: stretched in direction of travel (perspective squish)
-      const squishX = 1.0 + this.z * 0.5;
-      const squishY = 1.0 - this.z * 0.3;
-
-      ctx.save();
-      ctx.translate(proj.x, proj.y);
-      ctx.scale(squishX, squishY);
-
-      // Outer glow
-      const grd = ctx.createRadialGradient(0, 0, r * 0.2, 0, 0, r * 1.4);
-      grd.addColorStop(0, `rgba(255,255,255,${this.alpha})`);
-      grd.addColorStop(0.6, `rgba(255,255,255,${this.alpha * 0.7})`);
-      grd.addColorStop(1, `rgba(255,255,255,0)`);
-      ctx.beginPath();
-      ctx.arc(0, 0, r * 1.4, 0, Math.PI * 2);
-      ctx.fillStyle = grd;
-      ctx.fill();
-
-      // Core blob
-      ctx.beginPath();
-      ctx.arc(0, 0, r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255,255,255,${this.alpha})`;
-      ctx.fill();
-
-      ctx.restore();
     }
+
+    // Main blob — organic shape
+    const p = this.screenPos();
+    const R = this.baseR * p.s;
+    // Squish: stretched along travel direction
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.scale(1 + this.z * 0.4, 1);
+
+    ctx.beginPath();
+    const pts = 12;
+    for (let i = 0; i <= pts; i++) {
+      const angle  = (i / pts) * Math.PI * 2;
+      const jitter = rr(0.7, 1.3);
+      const rx = Math.cos(angle) * R * jitter;
+      const ry = Math.sin(angle) * R * jitter * 0.85;
+      i === 0 ? ctx.moveTo(rx, ry) : ctx.lineTo(rx, ry);
+    }
+    ctx.closePath();
+
+    // Gradient: bright core, softer edge
+    const grd = ctx.createRadialGradient(0, 0, 0, 0, 0, R * 1.3);
+    grd.addColorStop(0,   'rgba(255,255,255,1)');
+    grd.addColorStop(0.6, 'rgba(255,255,255,0.9)');
+    grd.addColorStop(1,   'rgba(255,255,255,0)');
+    ctx.fillStyle = grd;
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+// ─── DRIP ────────────────────────────────────────
+class Drip {
+  constructor(x, y, r) {
+    this.x   = x;
+    this.y   = y;
+    this.r   = r;
+    this.vy  = rr(0.4, 2.5);       // downward velocity
+    this.vx  = rr(-0.3, 0.3);
+    this.ay  = rr(0.04, 0.12);     // gravity
+    this.len = rr(8, 60);           // drip tail length
+    this.history = [{ x, y }];
+    this.done = false;
   }
 
-  // ── LOGO PROJECTILE ─────────────────────────────────
-  class LogoProjectile {
-    constructor() {
-      this.z = 0.0;
-      this.vz = 0.003;
-      this.x = 0; this.y = 0;
-      this.rotX = -0.4; // tumbling — paper flapping
-      this.rotY = 0.2;
-      this.rotZ = 0.15;
-      this.rotVX = 0.04;
-      this.rotVY = 0.02;
-      this.rotVZ = 0.01;
-      this.alpha = 0;
-      this.slapped = false;
-      this.slapTime = 0;
-      this.wipeY = -H; // wipe line position
-      this.wipeDone = false;
-      this.active = true;
+  update() {
+    if (this.done) return;
+    this.vy += this.ay;
+    this.x  += this.vx;
+    this.y  += this.vy;
+    this.history.push({ x: this.x, y: this.y });
+    if (this.history.length > this.len) this.history.shift();
+
+    // Paint the drip onto the paint canvas as it moves
+    if (this.history.length > 1) {
+      const prev = this.history[this.history.length - 2];
+      pctx.beginPath();
+      pctx.moveTo(prev.x, prev.y);
+      pctx.lineTo(this.x, this.y);
+      pctx.strokeStyle = 'white';
+      pctx.lineWidth   = this.r * 1.6;
+      pctx.lineCap     = 'round';
+      pctx.stroke();
+      // Blob at drip head
+      pctx.beginPath();
+      pctx.arc(this.x, this.y, this.r * rr(0.8, 1.3), 0, Math.PI * 2);
+      pctx.fillStyle = 'white';
+      pctx.fill();
     }
 
-    update(t) {
-      if (this.slapped) {
-        // Slide down wiping paint
-        if (!this.wipeDone) {
-          this.wipeY += H * 0.04; // fast slide
-          if (this.wipeY > H * 1.2) {
-            this.wipeDone = true;
-            this.wipeY = H * 1.2;
-          }
-        }
-        return;
-      }
+    if (this.y > H + 20) this.done = true;
+    // Terminal velocity
+    if (this.vy > 18) this.vy = 18;
+  }
+}
 
-      this.z += this.vz * (1 + this.z * 4);
-      // Paper tumbles as it flies — decelerates rotation on approach
-      const tumbleFactor = Math.max(0, 1 - this.z * 1.2);
-      this.rotX += this.rotVX * tumbleFactor;
-      this.rotY += this.rotVY * tumbleFactor;
-      this.rotZ += this.rotVZ * tumbleFactor;
-      this.alpha = Math.min(1, this.z * 3);
-
-      if (this.z >= 1.0) {
-        this.slapped = true;
-        this.slapTime = t;
-        this.wipeY = -20;
-      }
-    }
-
-    draw(t) {
-      if (!this.active || !logoImg) return;
-
-      if (this.slapped) {
-        // Draw white wipe covering everything above wipeY
-        if (!this.wipeDone) {
-          ctx.fillStyle = 'rgba(255,255,255,0.98)';
-          ctx.fillRect(0, 0, W, this.wipeY);
-
-          // Draw logo leading the wipe edge
-          const logoSize = Math.min(W, H) * 0.55;
-          ctx.save();
-          ctx.globalAlpha = 1;
-          // Slight crumple at wipe edge
-          ctx.translate(cx, this.wipeY);
-          ctx.rotate(Math.sin(t * 8) * 0.04);
-          ctx.drawImage(logoImg, -logoSize / 2, -logoSize * 0.1, logoSize, logoSize);
-          ctx.restore();
-        }
-        return;
-      }
-
-      const proj = project(this.x, this.y, this.z);
-      const size = Math.min(W, H) * 0.55 * proj.s;
-
-      ctx.save();
-      ctx.globalAlpha = this.alpha;
-      ctx.translate(proj.x, proj.y);
-
-      // 3D paper tumble illusion via skew
-      const skewX = Math.sin(this.rotY) * 0.6;
-      const skewY = Math.sin(this.rotX) * 0.3;
-      const scaleX = Math.abs(Math.cos(this.rotY));
-      const scaleY = Math.abs(Math.cos(this.rotX));
-
-      ctx.transform(scaleX, skewY, skewX, scaleY, 0, 0);
-      ctx.rotate(this.rotZ);
-
-      // Shadow on the "paper"
-      ctx.shadowColor = 'rgba(0,0,0,0.4)';
-      ctx.shadowBlur = 20 * proj.s;
-
-      ctx.drawImage(logoImg, -size / 2, -size / 2, size, size);
-      ctx.restore();
-    }
+// ─── LOGO SLAM ───────────────────────────────────
+class LogoSlam {
+  constructor() {
+    this.z      = 0;
+    this.vz     = 0.005;
+    this.rotX   = rr(-0.5, 0.5);
+    this.rotY   = rr(-0.4, 0.4);
+    this.rotZ   = rr(-0.3, 0.3);
+    this.rVx    = rr(0.03, 0.07) * (r() < 0.5 ? 1 : -1);
+    this.rVy    = rr(0.02, 0.05) * (r() < 0.5 ? 1 : -1);
+    this.rVz    = rr(0.01, 0.03) * (r() < 0.5 ? 1 : -1);
+    this.slapped = false;
+    this.wipeY   = -10;
+    this.wipeDone = false;
+    this.alpha   = 0;
   }
 
-  // ── SCENE STATE ──────────────────────────────────────
-  let gobs = [];
-  let logoPrj = null;
-  let paintCoverage = 0; // 0→1, how covered screen is
-  let whiteAlpha = 0;
-
-  function initScene() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-    cx = W / 2; cy = H / 2;
-
-    // Spawn 12 paint gobs in staggered waves
-    gobs = [];
-    for (let i = 0; i < 12; i++) {
-      gobs.push(new PaintGob(i * 0.08));
+  update() {
+    if (this.slapped) {
+      this.wipeY += H * 0.055;
+      if (this.wipeY > H + 100) this.wipeDone = true;
+      return;
     }
-
-    logoPrj = new LogoProjectile();
-    paintCoverage = 0;
-    whiteAlpha = 0;
-    phase = 'paintShoot';
-    startTime = null;
+    this.z  += this.vz * (1 + this.z * 5);
+    // Tumble slows as it approaches — sticker hitting a surface
+    const tumble = Math.max(0, 1 - this.z * 1.3);
+    this.rotX += this.rVx * tumble;
+    this.rotY += this.rVy * tumble;
+    this.rotZ += this.rVz * tumble;
+    this.alpha = Math.min(1, this.z * 2.5);
+    if (this.z >= 1) this.slapped = true;
   }
 
-  function tick(timestamp) {
-    if (!running) return;
-    if (!startTime) startTime = timestamp;
-    const t = (timestamp - startTime) / 1000; // seconds
+  draw() {
+    if (!logoImg) return;
 
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-    cx = W / 2; cy = H / 2;
-
-    ctx.clearRect(0, 0, W, H);
-
-    if (phase === 'paintShoot') {
-      // Update & draw gobs
-      let allSplatted = true;
-      let anySplatted = false;
-      for (const g of gobs) {
-        g.update(t);
-        g.draw(t);
-        if (!g.splattered) allSplatted = false;
-        if (g.splattered) anySplatted = true;
-      }
-
-      // Build white coverage as gobs splat
-      if (anySplatted) {
-        paintCoverage = Math.min(1, paintCoverage + 0.018);
-        // White flood fill growing from splat sites
-        ctx.fillStyle = `rgba(255,255,255,${paintCoverage * 0.7})`;
-        ctx.fillRect(0, 0, W, H);
-      }
-
-      // After ~2s or all gobs done, launch logo
-      if (t > 1.8 || allSplatted) {
-        // Fill white
-        whiteAlpha = Math.min(1, whiteAlpha + 0.06);
-        ctx.fillStyle = `rgba(255,255,255,${whiteAlpha})`;
-        ctx.fillRect(0, 0, W, H);
-
-        if (whiteAlpha >= 1) {
-          phase = 'logoShoot';
-          startTime = timestamp; // reset timer for logo phase
-        }
-      }
-    }
-    else if (phase === 'logoShoot') {
-      // White background during logo phase
+    if (this.slapped) {
+      // White flood above wipe line (remaining paint)
       ctx.fillStyle = 'white';
-      ctx.fillRect(0, 0, W, H);
+      ctx.fillRect(0, 0, W, this.wipeY);
 
-      logoPrj.update(t);
-      logoPrj.draw(t);
+      // Logo rides the wipe edge
+      const logoSize = Math.min(W * 0.75, H * 0.55);
+      ctx.save();
+      ctx.translate(cx, this.wipeY + logoSize * 0.05);
+      // Slight flutter as it slides
+      ctx.rotate(Math.sin(Date.now() * 0.015) * 0.025);
+      ctx.globalAlpha = 1;
+      ctx.drawImage(logoImg, -logoSize / 2, -logoSize * 0.52, logoSize, logoSize);
+      ctx.restore();
+      return;
+    }
 
-      if (logoPrj.wipeDone) {
-        phase = 'done';
-        endIntro();
-        return;
+    const fov   = 500;
+    const scale = fov / (fov + (1 - this.z) * 1800);
+    const size  = Math.min(W * 0.75, H * 0.55) * scale;
+
+    ctx.save();
+    ctx.globalAlpha = this.alpha;
+    ctx.translate(cx, cy);
+
+    // Simulate paper tumbling with skew/scale transforms
+    const sx = Math.cos(this.rotY);
+    const sy = Math.cos(this.rotX);
+    ctx.transform(sx, Math.sin(this.rotX) * 0.4, Math.sin(this.rotY) * 0.4, sy, 0, 0);
+    ctx.rotate(this.rotZ);
+
+    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+    ctx.shadowBlur  = 30 * scale;
+    ctx.drawImage(logoImg, -size / 2, -size / 2, size, size);
+    ctx.restore();
+  }
+}
+
+// ─── MAIN LOOP ───────────────────────────────────
+let startTime = null;
+let rafId     = null;
+
+function resize() {
+  W = canvas.width      = paintCanvas.width  = window.innerWidth;
+  H = canvas.height     = paintCanvas.height = window.innerHeight;
+  cx = W / 2; cy = H / 2;
+}
+
+function initScene() {
+  resize();
+  pctx.clearRect(0, 0, W, H);
+  blobs = [];
+  drips = [];
+  logo  = null;
+  phase = 'shoot';
+  phaseTime = 0;
+  startTime = null;
+
+  // Spawn 20 blobs in staggered waves — big variance in size
+  for (let i = 0; i < 20; i++) {
+    blobs.push(new Blob(i * 0.06 + r() * 0.05));
+  }
+}
+
+function tick(ts) {
+  if (!running) return;
+  if (!startTime) startTime = ts;
+  const t = (ts - startTime) / 1000;
+
+  resize();
+  ctx.clearRect(0, 0, W, H);
+
+  if (phase === 'shoot') {
+    // Draw paint accumulation from offscreen canvas
+    ctx.drawImage(paintCanvas, 0, 0);
+
+    // Update blobs
+    let allHit = true;
+    for (const b of blobs) {
+      b.update(t);
+      b.draw();
+      if (!b.hit) allHit = false;
+    }
+
+    // Update drips — they write themselves onto paintCanvas
+    for (const d of drips) d.update();
+
+    // Once all blobs hit and enough time passed, flood to full white then launch logo
+    if (allHit || t > 2.8) {
+      phaseTime += 0.025;
+      // Flood remaining gaps with white
+      pctx.fillStyle = `rgba(255,255,255,${Math.min(0.08, phaseTime * 0.04)})`;
+      pctx.fillRect(0, 0, W, H);
+      ctx.drawImage(paintCanvas, 0, 0);
+
+      if (phaseTime > 1.2) {
+        // Check coverage — sample paint canvas for white pixels
+        // Just use time-based transition after ~1.5s of flooding
+      }
+
+      if (phaseTime > 2.0) {
+        // Full white, launch logo
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, W, H);
+        phase = 'logoSlam';
+        phaseTime = 0;
+        startTime = ts;
+        logo = new LogoSlam();
       }
     }
-
-    rafId = requestAnimationFrame(tick);
   }
+  else if (phase === 'logoSlam') {
+    // White bg
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, W, H);
 
-  function endIntro() {
-    running = false;
-    canvas.style.display = 'none';
-    document.getElementById('mainPage').classList.add('visible');
-  }
+    logo.update();
+    logo.draw();
 
-  function runIntro() {
-    if (!logoImg) {
-      // Load logo first
-      logoImg = new Image();
-      logoImg.crossOrigin = 'anonymous';
-      logoImg.onload = () => { startIntro(); };
-      logoImg.onerror = () => { endIntro(); }; // fallback
-      logoImg.src = 'https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png';
-    } else {
-      startIntro();
+    if (logo.wipeDone) {
+      phase = 'done';
+      endIntro();
+      return;
     }
   }
 
-  function startIntro() {
-    canvas.style.display = 'block';
-    running = true;
-    initScene();
-    rafId = requestAnimationFrame(tick);
-  }
+  rafId = requestAnimationFrame(tick);
+}
 
-  function dismiss() {
+function endIntro() {
+  running = false;
+  canvas.style.display = 'none';
+  document.getElementById('mainPage').classList.add('visible');
+}
+
+function runIntro() {
+  if (!logoImg) {
+    logoImg = new Image();
+    logoImg.crossOrigin = 'anonymous';
+    logoImg.onload  = startIntro;
+    logoImg.onerror = endIntro;
+    logoImg.src = 'https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png';
+  } else {
+    startIntro();
+  }
+}
+
+function startIntro() {
+  canvas.style.display = 'block';
+  running = true;
+  initScene();
+  rafId = requestAnimationFrame(tick);
+}
+
+function dismiss() {
+  document.getElementById('ageGate').classList.add('dismissed');
+  runIntro();
+  try { sessionStorage.setItem('wk_age_ok', '1'); } catch(e) {}
+}
+
+try {
+  if (sessionStorage.getItem('wk_age_ok') === '1') {
     document.getElementById('ageGate').classList.add('dismissed');
     runIntro();
-    try { sessionStorage.setItem('wk_age_ok', '1'); } catch(e) {}
   }
+} catch(e) {}
 
-  try {
-    if (sessionStorage.getItem('wk_age_ok') === '1') {
-      document.getElementById('ageGate').classList.add('dismissed');
-      runIntro();
-    }
-  } catch(e) {}
-  </script>
-
+window.addEventListener('resize', () => { if (running) resize(); });
+</script>
 </body>
 </html>
