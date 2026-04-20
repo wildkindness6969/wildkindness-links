@@ -19,7 +19,6 @@
       background-image:url('https://wildkindness-cdn.b-cdn.net/bg-pattern.png');
       background-repeat:repeat; background-size:300px auto; background-attachment:fixed;
     }
-    #introCanvas { position:fixed; inset:0; z-index:9000; pointer-events:none; display:none; }
     .age-gate {
       position:fixed; inset:0; z-index:9999;
       display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -72,13 +71,73 @@
     .soon-badge { font-size:7px; letter-spacing:0.15em; text-transform:uppercase; opacity:0.35; font-family:'Space Grotesk',sans-serif; border:1px solid var(--ink); padding:2px 5px; }
     .colophon { text-align:center; padding-top:4px; }
     .colophon p { font-family:'Space Grotesk',sans-serif; font-size:8px; letter-spacing:0.15em; text-transform:uppercase; opacity:0.3; }
+    /* ── ROLLER BLIND SYSTEM ── */
+
+    /* Each card is wrapped in a .blind-wrap that clips overflow */
+    .blind-wrap {
+      position: relative;
+      overflow: hidden;
+      /* Height collapses to 0 initially — set by JS */
+    }
+
+    /* The visible card content — sits inside blind-wrap */
+    .blind-wrap .header-card,
+    .blind-wrap .links-box,
+    .blind-wrap .colophon {
+      /* Will be translated up (rolled up) initially, JS animates down */
+      transform: translateY(-100%);
+      will-change: transform;
+    }
+
+    /* The roller tube at the top of each blind */
+    .blind-tube {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 10px;
+      background: linear-gradient(180deg, #2a1f0a 0%, #4a3820 40%, #2a1f0a 100%);
+      border-radius: 0 0 3px 3px;
+      z-index: 10;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    /* Pull cord hanging from bottom */
+    .blind-cord {
+      position: absolute;
+      bottom: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      background: rgba(26,18,9,0.35);
+      z-index: 10;
+      transform-origin: top center;
+    }
+    .blind-cord::after {
+      content: '';
+      position: absolute;
+      bottom: -5px; left: 50%;
+      transform: translateX(-50%);
+      width: 8px; height: 8px;
+      background: #2a1f0a;
+      border-radius: 50%;
+    }
+
+    /* Bottom hem — the weighted bar */
+    .blind-hem {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 8px;
+      background: linear-gradient(180deg, #3a2a10 0%, #5a4020 50%, #3a2a10 100%);
+      border-radius: 2px 2px 0 0;
+      z-index: 10;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.4);
+    }
+
     @media (max-width:480px) { .page { padding:24px 14px 60px; } }
     @supports (padding-bottom:env(safe-area-inset-bottom)) { .page { padding-bottom:calc(60px + env(safe-area-inset-bottom)); } }
   </style>
 </head>
 <body>
 
-<canvas id="introCanvas"></canvas>
 
 <div class="age-gate" id="ageGate">
   <div class="age-gate-inner">
@@ -91,15 +150,21 @@
 </div>
 
 <div class="page" id="mainPage">
-  <div class="header-card">
-    <div class="logo-wrapper">
-      <div class="logo-glow"></div>
-      <img src="https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png" alt="Wild Kindness" class="logo">
+  <div class="blind-wrap" id="blind0">
+    <div class="blind-tube"></div>
+    <div class="header-card">
+      <div class="logo-wrapper">
+        <div class="logo-glow"></div>
+        <img src="https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png" alt="Wild Kindness" class="logo">
+      </div>
+      <p class="masthead-tag">Hung. Bubble Butt. Squirter.</p>
+      <p class="masthead-sub">Serving SF Bay Area &amp; Beyond</p>
     </div>
-    <p class="masthead-tag">Hung. Bubble Butt. Squirter.</p>
-    <p class="masthead-sub">Serving SF Bay Area &amp; Beyond</p>
+    <div class="blind-hem"></div>
   </div>
-  <div class="links-box">
+  <div class="blind-wrap" id="blind1">
+    <div class="blind-tube"></div>
+    <div class="links-box">
     <a href="tel:+19258979008" class="link-btn"><span class="link-icon emoji">📞</span><span class="link-label">Call Me</span><span class="link-arrow">&#8594;</span></a>
     <a href="sms:+19258979008" class="link-btn"><span class="link-icon emoji">💬</span><span class="link-label">Text Me</span><span class="link-arrow">&#8594;</span></a>
     <a href="https://onlyfans.com/wildkindness69" target="_blank" rel="noopener" class="link-btn"><span class="link-icon"><svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 4.5c4.142 0 7.5 3.358 7.5 7.5s-3.358 7.5-7.5 7.5S4.5 16.142 4.5 12 7.858 4.5 12 4.5zm0 2.25A5.25 5.25 0 1 0 17.25 12 5.257 5.257 0 0 0 12 6.75zm0 2.25A3 3 0 1 1 9 12a3 3 0 0 1 3-3z"/></svg></span><span class="link-label">OnlyFans</span><span class="link-arrow">&#8594;</span></a>
@@ -109,440 +174,190 @@
     <a href="https://wa.me/19258979008" target="_blank" rel="noopener" class="link-btn"><span class="link-icon"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg></span><span class="link-label">WhatsApp</span><span class="link-arrow">&#8594;</span></a>
     <a href="https://t.me/wildkindness69" target="_blank" rel="noopener" class="link-btn"><span class="link-icon"><svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></span><span class="link-label">Telegram</span><span class="link-arrow">&#8594;</span></a>
     <a href="https://www.wildkindness69.com" target="_blank" rel="noopener" class="link-btn"><span class="link-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.22.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></span><span class="link-label">Website</span><span class="link-arrow">&#8594;</span></a>
+  </div><!-- /links-box -->
+    <div class="blind-hem"></div>
+  </div><!-- /blind1 -->
+
+  <div class="blind-wrap" id="blind2">
+    <footer class="colophon"><p>&copy; 2026 Wild Kindness &nbsp;&middot;&nbsp; San Francisco, CA</p></footer>
   </div>
-  <footer class="colophon"><p>&copy; 2026 Wild Kindness &nbsp;&middot;&nbsp; San Francisco, CA</p></footer>
 </div>
 
 <script>
 (function() {
-  var canvas = document.getElementById('introCanvas');
-  var ctx    = canvas.getContext('2d');
-  var W, H, cx, cy;
 
-  // Offscreen canvas accumulates paint permanently
-  var pc   = document.createElement('canvas');
-  var pctx = pc.getContext('2d');
+  // ── SPRING PHYSICS ──────────────────────────────────────────
+  // Models a roller blind being pulled down then bouncing
+  // pos: 0 = fully rolled up, 1 = fully extended
+  // Velocity-based spring with damping — feels like weighted roller
 
-  var logoImg = null;
-  var running = false;
-
-  // Simple state machine with absolute timestamps
-  // PHASES: 'blobs' -> 'flood' -> 'white' -> 'logo' -> 'wipe' -> 'done'
-  var phase     = 'blobs';
-  var phaseStart = 0; // ms timestamp when phase began
-  var rafId     = null;
-
-  var blobs  = [];
-  var drips  = [];
-  var logo   = null;
-  var wipeY  = 0;
-
-  function rnd(a, b) { return a + Math.random() * (b - a); }
-
-  // ── Blob ──
-  function makeBlob(delayMs) {
-    return {
-      delay:  delayMs,
-      born:   false,
-      hit:    false,
-      z:      0,
-      vz:     rnd(0.008, 0.02),
-      ox:     rnd(-100, 100),
-      oy:     rnd(-130, 100),
-      wx:     Math.random() * Math.PI * 2,
-      wy:     Math.random() * Math.PI * 2,
-      wsx:    rnd(0.05, 0.13),
-      wsy:    rnd(0.04, 0.10),
-      wax:    rnd(20, 90),
-      way:    rnd(15, 55),
-      baseR:  rnd(20, 90),
-      trail:  [],
-      seed:   Math.random() * 1000
-    };
+  function Spring(stiffness, damping, mass) {
+    this.k    = stiffness; // spring constant
+    this.b    = damping;   // damping coefficient
+    this.m    = mass;      // mass of weighted hem bar
+    this.pos  = 0;         // 0=rolled up, 1=fully down
+    this.vel  = 0;
+    this.target = 1;
+    this.settled = false;
   }
 
-  function blobPos(b) {
-    var fov   = 500;
-    var scale = fov / (fov + (1 - b.z) * 1600);
-    var wx    = Math.sin(b.wx) * b.wax * (1 - b.z * 0.6);
-    var wy    = Math.sin(b.wy) * b.way * (1 - b.z * 0.6);
-    return { x: cx + (b.ox + wx) * scale, y: cy + (b.oy + wy) * scale, s: scale };
-  }
-
-  function splatBlob(x, y, r, seed) {
-    pctx.fillStyle = 'white';
-
-    // Main splat — lumpy hard-edged polygon, no circles
-    pctx.beginPath();
-    var pts = 12 + Math.floor(Math.random() * 8);
-    for (var i = 0; i <= pts; i++) {
-      var angle = (i / pts) * Math.PI * 2;
-      var s     = Math.sin(seed * 7.3 + i * 53.1) * 0.5 + 0.5;
-      var jit   = 0.45 + s * 0.85;
-      var rx    = x + Math.cos(angle) * r * jit;
-      var ry    = y + Math.sin(angle) * r * jit * rnd(0.5, 1.1);
-      i === 0 ? pctx.moveTo(rx, ry) : pctx.lineTo(rx, ry);
+  Spring.prototype.update = function(dt) {
+    if (this.settled) return;
+    // F = -k(x - target) - b*v
+    var force = -this.k * (this.pos - this.target) - this.b * this.vel;
+    var acc   = force / this.m;
+    this.vel += acc * dt;
+    this.pos += this.vel * dt;
+    // Settle check
+    if (Math.abs(this.pos - this.target) < 0.0008 && Math.abs(this.vel) < 0.0008) {
+      this.pos = this.target;
+      this.vel = 0;
+      this.settled = true;
     }
-    pctx.closePath();
-    pctx.fill();
+  };
 
-    // Hard satellite blobs — irregular sizes and positions
-    var count = 12 + Math.floor(Math.random() * 20);
-    for (var j = 0; j < count; j++) {
-      var angle = Math.random() * Math.PI * 2;
-      var dist  = Math.random() < 0.35 ? rnd(r * 0.1, r * 0.7) : rnd(r * 0.8, r * 3.5);
-      var sr    = rnd(2, r * 0.4);
-      var sx    = x + Math.cos(angle) * dist;
-      var sy    = y + Math.sin(angle) * dist;
-      // Hard dot — no alpha variation, just solid white
-      pctx.beginPath();
-      pctx.arc(sx, sy, sr, 0, Math.PI * 2);
-      pctx.fill();
+  // ── BLIND SETUP ────────────────────────────────────────────
+  // We animate each .blind-wrap by:
+  //   1. Setting its height to the full natural height (measured)
+  //   2. Clipping via clip-path: inset(0 0 (1-pos)*100% 0)
+  //   3. The inner content translates from -100% to 0% (rolls down)
 
-      // Some dots get a mini drip below them
-      if (Math.random() < 0.3 && sy < H * 0.88) {
-        drips.push(makeDrip(sx, sy, sr * rnd(0.4, 0.9)));
+  var blinds = [
+    { id: 'blind0', delay: 0,    spring: new Spring(180, 22, 1.0) },
+    { id: 'blind1', delay: 160,  spring: new Spring(160, 20, 1.2) },
+    { id: 'blind2', delay: 280,  spring: new Spring(220, 26, 0.7) },
+  ];
+
+  var page   = document.getElementById('mainPage');
+  var rafId  = null;
+  var startTs = null;
+  var active  = false;
+
+  function initBlinds() {
+    for (var i = 0; i < blinds.length; i++) {
+      var b   = blinds[i];
+      var el  = document.getElementById(b.id);
+      if (!el) continue;
+      b.el    = el;
+      // Measure natural height
+      el.style.visibility = 'hidden';
+      el.style.clipPath   = 'none';
+      b.naturalH = el.offsetHeight;
+      // Set clip to fully rolled up
+      el.style.visibility  = '';
+      el.style.clipPath    = 'inset(0 0 100% 0)';
+      el.style.willChange  = 'clip-path';
+      // Inner content starts rolled up (translateY -100%)
+      var inner = el.querySelector('.header-card, .links-box, .colophon, footer');
+      if (inner) {
+        inner.style.transform  = 'translateY(-100%)';
+        inner.style.transition = 'none';
+        inner.style.willChange = 'transform';
+        b.inner = inner;
       }
-    }
-
-    // Drip strings — downward only like gravity paint
-    var dripCount = 4 + Math.floor(Math.random() * 6);
-    for (var k = 0; k < dripCount; k++) {
-      var angle = rnd(Math.PI * 0.05, Math.PI * 0.95); // downward arc
-      var dist  = rnd(r * 0.05, r * 0.6);
-      drips.push(makeDrip(
-        x + Math.cos(angle) * dist,
-        y + Math.sin(angle) * dist,
-        rnd(5, 18)
-      ));
-    }
-
-    // Stringy paint lines radiating out
-    var lines = 3 + Math.floor(Math.random() * 5);
-    for (var l = 0; l < lines; l++) {
-      var angle = Math.random() * Math.PI * 2;
-      var len   = rnd(r * 0.3, r * 2.2);
-      var thick = rnd(2, r * 0.18);
-      pctx.beginPath();
-      pctx.moveTo(x, y);
-      // Wobbly line
-      var mx = x + Math.cos(angle) * len * 0.5 + rnd(-r*0.2, r*0.2);
-      var my = y + Math.sin(angle) * len * 0.5 + rnd(-r*0.2, r*0.2);
-      var ex = x + Math.cos(angle) * len;
-      var ey = y + Math.sin(angle) * len;
-      pctx.quadraticCurveTo(mx, my, ex, ey);
-      pctx.strokeStyle = 'white';
-      pctx.lineWidth   = thick;
-      pctx.lineCap     = 'round';
-      pctx.stroke();
-      // Hard bead at end
-      pctx.beginPath();
-      pctx.arc(ex, ey, thick * rnd(1.2, 2.2), 0, Math.PI * 2);
-      pctx.fill();
+      // Cord height
+      var cord = el.querySelector('.blind-cord');
+      if (cord) cord.style.height = Math.max(20, b.naturalH * 0.12) + 'px';
     }
   }
 
-  // ── Drip ──
-  function makeDrip(x, y, r) {
-    return { x: x, y: y, r: r, vy: rnd(0.3, 2), vx: rnd(-0.2, 0.2), ay: rnd(0.04, 0.14), done: false };
-  }
+  function tick(ts) {
+    if (!active) return;
+    if (!startTs) startTs = ts;
+    var elapsed = ts - startTs; // ms
+    var dt = 1 / 60; // fixed timestep feels more physical
 
-  function updateDrip(d) {
-    if (d.done) return;
-    var px = d.x, py = d.y;
-    d.vy += d.ay;
-    if (d.vy > 15) d.vy = 15;
-    d.x += d.vx; d.y += d.vy;
-    // Paint drip onto permanent canvas
-    pctx.beginPath();
-    pctx.moveTo(px, py); pctx.lineTo(d.x, d.y);
-    pctx.strokeStyle = 'white';
-    pctx.lineWidth   = d.r * 1.5;
-    pctx.lineCap     = 'round';
-    pctx.stroke();
-    pctx.beginPath();
-    pctx.arc(d.x, d.y, d.r * rnd(0.8, 1.2), 0, Math.PI * 2);
-    pctx.fillStyle = 'white';
-    pctx.fill();
-    if (d.y > H + 30) d.done = true;
-  }
+    var allDone = true;
 
-  // Draw a sharp teardrop paint blob — stretched along travel direction
-  function paintDrop(cx2, cy2, R, stretch, seed) {
-    // Use seeded-ish jitter for consistent per-blob shape
-    ctx.fillStyle = 'white';
-    ctx.beginPath();
-    var pts = 9;
-    // Lumpy irregular polygon — like a paint glob, no smooth edges
-    var jitters = [];
-    for (var i = 0; i < pts; i++) {
-      // Pseudo-random per point, deterministic per blob via seed
-      var s = Math.sin(seed * 13.7 + i * 97.3) * 0.5 + 0.5;
-      jitters.push(0.55 + s * 0.65);
-    }
-    for (var i = 0; i <= pts; i++) {
-      var angle = (i / pts) * Math.PI * 2 - Math.PI / 2;
-      // Heavier at back (top), pointy at front (bottom) — teardrop
-      var tearFactor = 1 + stretch * (Math.cos(angle + Math.PI / 2) * 0.5 + 0.5) * 1.8;
-      var jit = jitters[i % pts];
-      var rx = cx2 + Math.cos(angle) * R * jit * tearFactor * 0.7;
-      var ry = cy2 + Math.sin(angle) * R * jit * tearFactor;
-      i === 0 ? ctx.moveTo(rx, ry) : ctx.lineTo(rx, ry);
-    }
-    ctx.closePath();
-    ctx.fill();
+    for (var i = 0; i < blinds.length; i++) {
+      var b = blinds[i];
+      if (!b.el) continue;
 
-    // Stringy drip tail — thin line dangling below
-    var tailLen = R * (0.8 + stretch * 1.2);
-    ctx.beginPath();
-    ctx.moveTo(cx2, cy2 + R * 0.9);
-    ctx.bezierCurveTo(
-      cx2 + rnd(-R*0.3, R*0.3), cy2 + R + tailLen * 0.3,
-      cx2 + rnd(-R*0.2, R*0.2), cy2 + R + tailLen * 0.7,
-      cx2 + rnd(-R*0.15, R*0.15), cy2 + R + tailLen
-    );
-    ctx.strokeStyle = 'white';
-    ctx.lineWidth   = Math.max(2, R * 0.35);
-    ctx.lineCap     = 'round';
-    ctx.stroke();
-    // Teardrop bead at end of drip
-    ctx.beginPath();
-    ctx.arc(cx2 + rnd(-R*0.1, R*0.1), cy2 + R + tailLen, R * 0.22, 0, Math.PI * 2);
-    ctx.fillStyle = 'white';
-    ctx.fill();
-  }
-
-  function drawBlob(b) {
-    if (!b.born || b.hit) return;
-    var p = blobPos(b);
-    var R = b.baseR * p.s;
-    var stretch = b.z * 1.4; // more stretched the faster it's moving
-
-    // Paint streak trail — thick hard-edged line, no feathering
-    if (b.trail.length > 2) {
-      ctx.beginPath();
-      ctx.moveTo(b.trail[0].x, b.trail[0].y);
-      for (var i = 1; i < b.trail.length; i++) {
-        ctx.lineTo(b.trail[i].x, b.trail[i].y);
+      // Wait for this blind's delay
+      if (elapsed < b.delay) {
+        allDone = false;
+        continue;
       }
-      ctx.strokeStyle = 'white';
-      ctx.lineWidth   = Math.max(3, R * 1.1);
-      ctx.lineCap     = 'round';
-      ctx.lineJoin    = 'round';
-      ctx.stroke();
 
-      // Irregular blobs along the trail
-      for (var i = 0; i < b.trail.length; i += 3) {
-        if (Math.random() < 0.5) {
-          var tr = b.trail[i];
-          var br = R * (i / b.trail.length) * 0.6;
-          ctx.beginPath();
-          ctx.arc(tr.x + rnd(-br*0.5, br*0.5), tr.y + rnd(-br*0.3, br*0.3), br * rnd(0.5, 1.1), 0, Math.PI * 2);
-          ctx.fillStyle = 'white';
-          ctx.fill();
-        }
+      b.spring.update(dt);
+
+      var pos = Math.max(0, Math.min(1.5, b.spring.pos)); // allow slight overshoot past 1
+
+      // Clip: reveal from top downward
+      // inset(top right bottom left)
+      // bottom inset = (1-pos)*100% — shrinks as pos goes 0→1
+      var bottomInset = Math.max(0, (1 - pos) * 100);
+      b.el.style.clipPath = 'inset(0 0 ' + bottomInset.toFixed(2) + '% 0)';
+
+      // Inner content translates from -100% to 0 as blind unrolls
+      // Slightly behind the clip for the "rolling off the tube" feel
+      var translateY = Math.max(-100, (1 - pos) * -100);
+      if (b.inner) {
+        b.inner.style.transform = 'translateY(' + translateY.toFixed(2) + '%)';
       }
+
+      // Animate cord swinging (it shortens as blind extends)
+      var cord = b.el.querySelector('.blind-cord');
+      if (cord) {
+        // Cord swings based on velocity — overshoot makes it swing
+        var swing = b.spring.vel * 6;
+        cord.style.transform = 'translateX(-50%) rotate(' + swing.toFixed(1) + 'deg)';
+        // Cord gets shorter as blind pulls down
+        var cordH = Math.max(8, (1 - pos) * b.naturalH * 0.12);
+        cord.style.height = cordH + 'px';
+      }
+
+      // Hem shakes a little during overshoot
+      var hem = b.el.querySelector('.blind-hem');
+      if (hem && Math.abs(b.spring.vel) > 0.01) {
+        var hemShake = b.spring.vel * 3;
+        hem.style.transform = 'scaleX(' + (1 + hemShake * 0.02).toFixed(3) + ')';
+      }
+
+      if (!b.spring.settled) allDone = false;
     }
 
-    // Main paint drop
-    paintDrop(p.x, p.y, R, stretch, b.seed);
-  }
-
-  // ── Logo ──
-  function makeLogo() {
-    return {
-      z:      0,
-      vz:     0.006,
-      rx:     rnd(-0.5, 0.5),
-      ry:     rnd(-0.4, 0.4),
-      rz:     rnd(-0.3, 0.3),
-      rvx:    rnd(0.025, 0.06) * (Math.random() < 0.5 ? 1 : -1),
-      rvy:    rnd(0.02, 0.05)  * (Math.random() < 0.5 ? 1 : -1),
-      rvz:    rnd(0.01, 0.025) * (Math.random() < 0.5 ? 1 : -1),
-      alpha:  0,
-      slapped:false
-    };
-  }
-
-  function drawLogo(lg, ts) {
-    if (!logoImg) return;
-    if (phase === 'wipe') {
-      // White above wipe line
-      ctx.fillStyle = 'white';
-      ctx.fillRect(0, 0, W, wipeY);
-      // Logo at wipe edge
-      var logoSize = Math.min(W * 0.72, H * 0.52);
-      ctx.save();
-      ctx.translate(cx, wipeY + logoSize * 0.04);
-      ctx.rotate(Math.sin(ts * 0.012) * 0.022);
-      ctx.drawImage(logoImg, -logoSize/2, -logoSize * 0.52, logoSize, logoSize);
-      ctx.restore();
+    if (allDone) {
+      active = false;
+      // Clean up will-change
+      for (var i = 0; i < blinds.length; i++) {
+        if (blinds[i].el) blinds[i].el.style.willChange = 'auto';
+        if (blinds[i].inner) blinds[i].inner.style.willChange = 'auto';
+      }
       return;
     }
-    // Flying toward viewer
-    var fov   = 500;
-    var scale = fov / (fov + (1 - lg.z) * 1600);
-    var size  = Math.min(W * 0.72, H * 0.52) * scale;
-    var tumble = Math.max(0, 1 - lg.z * 1.4);
-    ctx.save();
-    ctx.globalAlpha = lg.alpha;
-    ctx.translate(cx, cy);
-    ctx.transform(
-      Math.cos(lg.ry), Math.sin(lg.rx) * 0.35,
-      Math.sin(lg.ry) * 0.35, Math.cos(lg.rx),
-      0, 0
-    );
-    ctx.rotate(lg.rz);
-    ctx.drawImage(logoImg, -size/2, -size/2, size, size);
-    ctx.restore();
-  }
 
-  // ── MAIN TICK ──
-  function tick(ts) {
-    if (!running) return;
-
-    W = canvas.width = pc.width = window.innerWidth;
-    H = canvas.height = pc.height = window.innerHeight;
-    cx = W/2; cy = H/2;
-
-    ctx.clearRect(0, 0, W, H);
-
-    var elapsed = ts - phaseStart; // ms since phase start
-
-    if (phase === 'blobs') {
-      // Draw accumulated paint
-      ctx.drawImage(pc, 0, 0);
-
-      // Update blobs
-      var allHit = true;
-      for (var i = 0; i < blobs.length; i++) {
-        var b = blobs[i];
-        if (elapsed < b.delay) { allHit = false; continue; }
-        b.born = true;
-        if (!b.hit) {
-          b.z  += b.vz * (1 + b.z * 4);
-          b.wx += b.wsx; b.wy += b.wsy;
-          var p = blobPos(b);
-          b.trail.push({ x: p.x, y: p.y });
-          if (b.trail.length > 22) b.trail.shift();
-          if (b.z >= 1) {
-            b.hit = true;
-            splatBlob(p.x, p.y, b.baseR * p.s, b.seed);
-          } else {
-            allHit = false;
-          }
-        }
-        drawBlob(b);
-      }
-
-      // Update drips
-      for (var d = 0; d < drips.length; d++) updateDrip(drips[d]);
-
-      // Transition to flood after 2.2s OR all blobs done
-      if (elapsed > 2200 || allHit) {
-        phase = 'flood';
-        phaseStart = ts;
-      }
-    }
-    else if (phase === 'flood') {
-      // Keep drawing paint + drips, flood white over ~600ms
-      ctx.drawImage(pc, 0, 0);
-      for (var d = 0; d < drips.length; d++) updateDrip(drips[d]);
-      var prog = Math.min(1, elapsed / 600);
-      ctx.fillStyle = 'rgba(255,255,255,' + (prog * 0.95) + ')';
-      ctx.fillRect(0, 0, W, H);
-      if (prog >= 1) {
-        phase = 'logo';
-        phaseStart = ts;
-        logo = makeLogo();
-      }
-    }
-    else if (phase === 'logo') {
-      ctx.fillStyle = 'white';
-      ctx.fillRect(0, 0, W, H);
-
-      // Accelerate logo toward viewer
-      logo.z  += logo.vz * (1 + logo.z * 5);
-      var tumble = Math.max(0, 1 - logo.z * 1.4);
-      logo.rx += logo.rvx * tumble;
-      logo.ry += logo.rvy * tumble;
-      logo.rz += logo.rvz * tumble;
-      logo.alpha = Math.min(1, logo.z * 2.5);
-
-      drawLogo(logo, ts);
-
-      if (logo.z >= 1) {
-        phase = 'wipe';
-        phaseStart = ts;
-        wipeY = 0;
-      }
-    }
-    else if (phase === 'wipe') {
-      ctx.fillStyle = 'white';
-      ctx.fillRect(0, 0, W, H);
-
-      // Wipe down at constant speed — full screen in ~600ms
-      wipeY = Math.min(H + 120, (elapsed / 600) * (H + 120));
-      drawLogo(logo, ts);
-
-      if (wipeY >= H + 120) {
-        phase = 'done';
-        endIntro();
-        return;
-      }
-    }
-
-    rafId = requestAnimationFrame(tick);
-  }
-
-  function endIntro() {
-    running = false;
-    canvas.style.display = 'none';
-    document.getElementById('mainPage').classList.add('visible');
-  }
-
-  function startIntro() {
-    W = canvas.width = pc.width = window.innerWidth;
-    H = canvas.height = pc.height = window.innerHeight;
-    cx = W/2; cy = H/2;
-
-    pctx.clearRect(0, 0, W, H);
-    blobs = []; drips = []; logo = null; wipeY = 0;
-    phase = 'blobs';
-
-    // 20 blobs, staggered 0–1200ms
-    for (var i = 0; i < 20; i++) {
-      blobs.push(makeBlob(i * 60 + Math.random() * 40));
-    }
-
-    canvas.style.display = 'block';
-    running = true;
-    phaseStart = performance.now();
     rafId = requestAnimationFrame(tick);
   }
 
   function runIntro() {
-    if (!logoImg) {
-      logoImg = new Image();
-      logoImg.crossOrigin = 'anonymous';
-      logoImg.onload  = startIntro;
-      logoImg.onerror = endIntro;
-      logoImg.src = 'https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png';
-    } else {
-      startIntro();
-    }
+    page.style.opacity = '1'; // page is already visible, blinds handle reveal
+    initBlinds();
+    active   = true;
+    startTs  = null;
+    // Give one frame for layout
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function(ts) {
+        startTs = ts;
+        tick(ts);
+      });
+    });
   }
 
   window.dismiss = function() {
     document.getElementById('ageGate').classList.add('dismissed');
-    runIntro();
-    try { sessionStorage.setItem('wk_age_ok','1'); } catch(e) {}
+    // Small delay so age gate fade starts first
+    setTimeout(runIntro, 300);
+    try { sessionStorage.setItem('wk_age_ok', '1'); } catch(e) {}
   };
+
+  // Page starts visible but blinds are rolled up
+  page.classList.add('visible');
 
   try {
     if (sessionStorage.getItem('wk_age_ok') === '1') {
       document.getElementById('ageGate').classList.add('dismissed');
-      runIntro();
+      setTimeout(runIntro, 100);
     }
   } catch(e) {}
 
