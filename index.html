@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="Wild Kindness — Hung. Bubble Butt. Versatile. San Francisco Bay Area & Beyond.">
   <meta property="og:title" content="Wild Kindness">
-  <meta property="og:description" content="Content creator & model. San Francisco Bay Area.">
   <meta property="og:image" content="https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png">
   <title>Wild Kindness</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,7 +32,17 @@
       background-attachment: fixed;
     }
 
-    /* ── AGE GATE ── */
+    /* INTRO CANVAS — fullscreen, on top of everything */
+    #introCanvas {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* AGE GATE */
     .age-gate {
       position: fixed; inset: 0; z-index: 9999;
       display: flex; flex-direction: column;
@@ -88,17 +97,16 @@
       font-size: 9px; letter-spacing: 0.1em; opacity: 0.35; text-transform: uppercase;
     }
 
-    /* ── MAIN PAGE ── */
+    /* MAIN PAGE */
     .page {
       max-width: 520px; margin: 0 auto;
       padding: 40px 20px 60px;
       opacity: 0;
       display: flex; flex-direction: column; gap: 10px;
-      transform-origin: center center;
     }
-    .page.visible { opacity: 1; }
+    .page.visible { opacity: 1; transition: opacity 0.5s ease; }
 
-    /* ── HEADER CARD (frosted, no dividers) ── */
+    /* HEADER CARD */
     .header-card {
       backdrop-filter: blur(16px) saturate(0.85);
       -webkit-backdrop-filter: blur(16px) saturate(0.85);
@@ -113,11 +121,8 @@
       border: 0.5px solid rgba(26,18,9,0.12); pointer-events: none;
     }
 
-    /* ── LOGO ── */
     .logo-wrapper {
-      position: relative;
-      width: 50%; /* 50% of the card = ~50% of links box width */
-      aspect-ratio: 1;
+      position: relative; width: 50%; aspect-ratio: 1;
       display: flex; align-items: center; justify-content: center;
       margin-bottom: 12px;
     }
@@ -129,7 +134,7 @@
     @keyframes heartGlow {
       0%   { opacity: 0.2; transform: scale(0.98); }
       7%   { opacity: 0.65; transform: scale(1.06); }
-      14%  { opacity: 0.2; transform: scale(1.0);  }
+      14%  { opacity: 0.2; transform: scale(1.0); }
       21%  { opacity: 0.5; transform: scale(1.04); }
       35%  { opacity: 0.2; transform: scale(0.98); }
       100% { opacity: 0.2; transform: scale(0.98); }
@@ -139,23 +144,14 @@
       position: relative; z-index: 2;
       filter: sepia(0.3) contrast(1.1) brightness(0.9);
       animation: heartbeat 3.2s ease-in-out infinite;
-      transform-origin: center center;
     }
     @keyframes heartbeat {
-      0%   { transform: scale(1);    }
+      0%   { transform: scale(1); }
       7%   { transform: scale(1.07); }
-      14%  { transform: scale(1.0);  }
+      14%  { transform: scale(1.0); }
       21%  { transform: scale(1.05); }
-      35%  { transform: scale(1);    }
-      100% { transform: scale(1);    }
-    }
-
-    /* ── MASTHEAD TEXT ── */
-    .masthead-title {
-      font-family: 'UnifrakturMaguntia', cursive;
-      font-size: clamp(36px, 10vw, 58px);
-      line-height: 1; color: var(--ink);
-      margin-bottom: 6px;
+      35%  { transform: scale(1); }
+      100% { transform: scale(1); }
     }
     .masthead-tag {
       font-family: 'Anton', sans-serif;
@@ -164,13 +160,12 @@
       color: var(--ink); opacity: 0.7; line-height: 1.5;
     }
     .masthead-sub {
-      font-family: 'Space Grotesk', sans-serif;
-      font-style: italic;
+      font-family: 'Space Grotesk', sans-serif; font-style: italic;
       font-size: clamp(9px, 2vw, 11px);
       opacity: 0.5; letter-spacing: 0.06em; margin-top: 2px;
     }
 
-    /* ── LINKS BOX ── */
+    /* LINKS BOX */
     .links-box {
       backdrop-filter: blur(16px) saturate(0.85);
       -webkit-backdrop-filter: blur(16px) saturate(0.85);
@@ -182,7 +177,6 @@
       content: ''; position: absolute; inset: 4px;
       border: 0.5px solid rgba(26,18,9,0.12); pointer-events: none;
     }
-
     .link-btn {
       display: flex; align-items: center; gap: 12px;
       width: 100%; padding: 11px 16px;
@@ -195,7 +189,6 @@
     }
     .link-btn:last-child { border-bottom: none; }
     .link-btn:hover { background: rgba(26,18,9,0.07); padding-left: 22px; }
-
     .link-icon {
       width: 26px; height: 26px; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center; opacity: 0.6;
@@ -211,68 +204,14 @@
       border: 1px solid var(--ink); padding: 2px 5px;
     }
 
-    /* ── COLOPHON ── */
-    .colophon {
-      text-align: center; padding-top: 4px;
-    }
+    .colophon { text-align: center; padding-top: 4px; }
     .colophon p {
       font-family: 'Space Grotesk', sans-serif;
       font-size: 8px; letter-spacing: 0.15em;
       text-transform: uppercase; opacity: 0.3;
     }
 
-    /* ══════════════════════════════════════════
-       FIREHOSE PAINT WIPE INTRO
-       Stage 1: Logo blasts in from nothing
-       Stage 2: White paint splat covers screen
-       Stage 3: Logo slides down, wiping paint off
-       Stage 4: Logo exits bottom, fades into header
-    ══════════════════════════════════════════ */
-
-    /* Overlay that starts white and gets wiped away */
-    #paintOverlay {
-      position: fixed;
-      inset: 0;
-      z-index: 8000;
-      pointer-events: none;
-      background: white;
-      opacity: 0;
-      transform: translateY(-100%); /* sits above screen */
-    }
-
-    /* The flying logo */
-    #flyLogo {
-      position: fixed;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%) scale(0.02);
-      width: 220px;
-      height: 220px;
-      z-index: 9000;
-      pointer-events: none;
-      opacity: 0;
-      filter: drop-shadow(0 0 40px rgba(255,255,255,0.9));
-      will-change: transform, opacity;
-    }
-    #flyLogo img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-
-    /* Page starts hidden, no transition — JS controls it */
-    .page {
-      max-width: 520px; margin: 0 auto;
-      padding: 40px 20px 60px;
-      opacity: 0;
-      display: flex; flex-direction: column; gap: 10px;
-      transform-origin: center center;
-    }
-    .page.visible { opacity: 1; transition: opacity 0.4s ease; }
-
-    @media (max-width: 480px) {
-      .page { padding: 24px 14px 60px; }
-    }
+    @media (max-width: 480px) { .page { padding: 24px 14px 60px; } }
     @supports (padding-bottom: env(safe-area-inset-bottom)) {
       .page { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
     }
@@ -280,9 +219,7 @@
 </head>
 <body>
 
-  <!-- FIREHOSE PAINT WIPE ELEMENTS -->
-  <div id="paintOverlay"></div>
-  <div id="flyLogo"><img src="https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png" alt=""></div>
+  <canvas id="introCanvas"></canvas>
 
   <div class="age-gate" id="ageGate">
     <div class="age-gate-inner">
@@ -295,8 +232,6 @@
   </div>
 
   <div class="page" id="mainPage">
-
-    <!-- HEADER CARD -->
     <div class="header-card">
       <div class="logo-wrapper">
         <div class="logo-glow"></div>
@@ -306,166 +241,441 @@
       <p class="masthead-sub">Serving SF Bay Area &amp; Beyond</p>
     </div>
 
-    <!-- LINKS BOX -->
     <div class="links-box">
-
       <a href="tel:+19258979008" class="link-btn">
         <span class="link-icon emoji">📞</span>
         <span class="link-label">Call Me</span>
         <span class="link-arrow">&#8594;</span>
       </a>
-
       <a href="sms:+19258979008" class="link-btn">
         <span class="link-icon emoji">💬</span>
         <span class="link-label">Text Me</span>
         <span class="link-arrow">&#8594;</span>
       </a>
-
       <a href="https://onlyfans.com/wildkindness69" target="_blank" rel="noopener" class="link-btn">
         <span class="link-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 4.5c4.142 0 7.5 3.358 7.5 7.5s-3.358 7.5-7.5 7.5S4.5 16.142 4.5 12 7.858 4.5 12 4.5zm0 2.25A5.25 5.25 0 1 0 17.25 12 5.257 5.257 0 0 0 12 6.75zm0 2.25A3 3 0 1 1 9 12a3 3 0 0 1 3-3z"/></svg></span>
         <span class="link-label">OnlyFans</span>
         <span class="link-arrow">&#8594;</span>
       </a>
-
       <a href="https://bsky.app/profile/wildkindness69.bsky.social" target="_blank" rel="noopener" class="link-btn">
         <span class="link-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.056-3.912.58-7.387 2.005-2.83 7.078 5.013 5.19 6.87-1.113 7.823-4.308.953 3.195 2.05 9.271 7.733 4.308 4.267-4.308 1.172-6.498-2.74-7.078a8.741 8.741 0 0 1-.415-.056c.14.017.279.036.415.056 2.67.297 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.861-.902-2.204-.659-.299-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8z"/></svg></span>
         <span class="link-label">Bluesky</span>
         <span class="link-arrow">&#8594;</span>
       </a>
-
       <div class="link-btn" style="opacity:0.3;cursor:not-allowed;pointer-events:none;">
         <span class="link-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span>
         <span class="link-label">Twitter / X</span>
         <span class="soon-badge">Coming Soon</span>
       </div>
-
       <a href="https://signal.me/#eu/j5o7xP5G6jN6eI9y8lLNLUB-8MszXPiWd9N" target="_blank" rel="noopener" class="link-btn">
         <span class="link-icon"><svg fill="currentColor" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><g><path d="M26.6,16c-0.2,4-1.9,7.2-5.5,9.2c-1.8,1-3.7,1.4-5.8,1.3c-1.7-0.1-3.3-0.6-4.7-1.5C10.4,25,10.3,25,10.1,25c-1.3,0.3-2.5,0.6-3.8,0.9c-0.2,0.1-0.3,0-0.2-0.2c0.3-1.3,0.6-2.5,0.9-3.8c0-0.2,0-0.3-0.1-0.5c-3.8-6.3,0-14.6,7.3-15.8c5.7-1,11.2,2.8,12.2,8.6C26.5,14.8,26.6,15.4,26.6,16L26.6,16z"/><path d="M4.6,28.6c-0.8,0-1.4-0.7-1.2-1.4c0.2-0.8,0.4-1.6,0.6-2.5c0-0.1,0.1-0.1,0.2-0.1c0.3,0.1,0.6,0.1,0.9,0.2c0.2,0,0.1,0.1,0.1,0.2c-0.1,0.7-0.3,1.3-0.5,2c-0.1,0.3-0.1,0.3,0.3,0.2c0.7-0.1,1.3-0.3,2-0.5c0.2,0,0.2,0,0.3,0.2c0,0.3,0.1,0.5,0.2,0.8c0,0.1,0,0.2-0.1,0.2C6.4,28.2,5.6,28.4,4.6,28.6z"/><path d="M3,16c0-0.6,0-1.1,0.1-1.7c0-0.2,0.1-0.2,0.3-0.2c0.2,0,0.5,0.1,0.8,0.1c0.1,0,0.2,0.1,0.2,0.2c-0.1,1.1-0.1,2.1,0,3.2c0,0.1,0,0.2-0.1,0.2c-0.3,0-0.6,0.1-0.9,0.1c-0.2,0-0.2-0.1-0.2-0.2C3,17.2,3,16.6,3,16z"/><path d="M29,16c0,0.6,0,1.1-0.1,1.7c0,0.2-0.1,0.2-0.3,0.2c-0.2,0-0.5-0.1-0.7-0.1c-0.3,0-0.3,0-0.2-0.3c0.1-0.9,0.1-1.7,0-2.6c0-0.1,0-0.3,0-0.5c0-0.1,0-0.2,0.2-0.2c0.3,0,0.5-0.1,0.8-0.1c0.2,0,0.2,0,0.2,0.2C29,14.8,29,15.4,29,16z"/><path d="M16,3c0.5,0,1.1,0,1.7,0.1c0.2,0,0.2,0.1,0.2,0.3c0,0.2-0.1,0.5-0.1,0.7c0,0.1-0.1,0.2-0.2,0.2c-1-0.1-2.1-0.1-3.1,0c-0.2,0-0.2,0-0.2-0.2c0-0.3-0.1-0.5-0.1-0.8c0-0.1,0-0.2,0.2-0.2C14.8,3,15.4,3,16,3z"/><path d="M16,29c-0.6,0-1.2,0-1.8-0.1c-0.2,0-0.2-0.1-0.2-0.3c0-0.2,0.1-0.5,0.1-0.8c0-0.1,0.1-0.2,0.2-0.2c1.1,0.1,2.1,0.1,3.2,0c0.1,0,0.2,0,0.2,0.2c0,0.3,0.1,0.6,0.1,0.8c0,0.2-0.1,0.2-0.2,0.2C17.2,29,16.6,29,16,29z"/></g></svg></span>
         <span class="link-label">Signal</span>
         <span class="link-arrow">&#8594;</span>
       </a>
-
       <a href="https://wa.me/19258979008" target="_blank" rel="noopener" class="link-btn">
         <span class="link-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg></span>
         <span class="link-label">WhatsApp</span>
         <span class="link-arrow">&#8594;</span>
       </a>
-
       <a href="https://t.me/wildkindness69" target="_blank" rel="noopener" class="link-btn">
         <span class="link-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></span>
         <span class="link-label">Telegram</span>
         <span class="link-arrow">&#8594;</span>
       </a>
-
       <a href="https://www.wildkindness69.com" target="_blank" rel="noopener" class="link-btn">
         <span class="link-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.22.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></span>
         <span class="link-label">Website</span>
         <span class="link-arrow">&#8594;</span>
       </a>
-
     </div>
 
     <footer class="colophon">
       <p>&copy; 2026 Wild Kindness &nbsp;&middot;&nbsp; San Francisco, CA</p>
     </footer>
-
   </div>
 
   <script>
-    function runIntro() {
-      const fly    = document.getElementById('flyLogo');
-      const paint  = document.getElementById('paintOverlay');
-      const page   = document.getElementById('mainPage');
+  // ═══════════════════════════════════════════════════
+  // FIREHOSE PHYSICS ENGINE
+  // ═══════════════════════════════════════════════════
+  const canvas = document.getElementById('introCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, cx, cy;
+  let running = false;
+  let logoImg = null;
+  let phase = 'idle'; // idle → paintShoot → logoShoot → wipe → done
+  let startTime = 0;
+  let rafId = null;
 
-      // Utility: animate with Web Animations API or fallback via requestAnimationFrame
-      function tween(el, keyframes, options) {
-        return el.animate(keyframes, { fill: 'forwards', ...options }).finished;
-      }
+  // Perspective helpers
+  // z=0 = horizon (center), z=1 = screen surface
+  function project(x3d, y3d, z) {
+    const fov = 600;
+    const scale = fov / (fov + (1 - z) * 2000);
+    return {
+      x: cx + x3d * scale,
+      y: cy + y3d * scale,
+      s: scale
+    };
+  }
 
-      async function sequence() {
-        // ── STAGE 1: Logo blasts in from a tiny dot ──
-        // Start: tiny, center screen, invisible
-        fly.style.opacity = '1';
-        await tween(fly, [
-          { transform: 'translate(-50%, -50%) scale(0.02)', filter: 'drop-shadow(0 0 0px white)', offset: 0 },
-          { transform: 'translate(-50%, -50%) scale(0.08)', filter: 'drop-shadow(0 0 20px white)', offset: 0.15 },
-          { transform: 'translate(-50%, -50%) scale(0.5)',  filter: 'drop-shadow(0 0 60px white)', offset: 0.5 },
-          { transform: 'translate(-50%, -50%) scale(1.6)',  filter: 'drop-shadow(0 0 120px white)', offset: 0.85 },
-          { transform: 'translate(-50%, -50%) scale(2.2)', filter: 'drop-shadow(0 0 180px white)', offset: 1 },
-        ], { duration: 600, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' });
-
-        // ── STAGE 2: White paint SPLAT — floods in from center ──
-        paint.style.transform = 'translateY(0)';
-        paint.style.borderRadius = '50%';
-        paint.style.inset = '50% 50%';
-        paint.style.width = '0'; paint.style.height = '0';
-        paint.style.left = '50%'; paint.style.top = '50%';
-        paint.style.transform = 'translate(-50%, -50%)';
-        paint.style.opacity = '1';
-        paint.style.position = 'fixed';
-
-        await tween(paint, [
-          { width: '0px',    height: '0px',    borderRadius: '50%', opacity: 1,   offset: 0 },
-          { width: '200vmax', height: '200vmax', borderRadius: '50%', opacity: 1, offset: 0.6 },
-          { width: '200vmax', height: '200vmax', borderRadius: '0%',  opacity: 1, offset: 1 },
-        ], { duration: 380, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' });
-
-        // ── STAGE 3: Logo slides DOWN wiping paint off screen ──
-        // Move fly logo to top of screen so it leads the wipe
-        fly.style.top = '0';
-        fly.style.left = '50%';
-
-        // Wipe: logo slides from top → bottom, dragging paint with it
-        // Paint follows as a clip that retreats upward
-        const wipePromise = tween(fly, [
-          { transform: 'translate(-50%, -30px) scale(1.4)', offset: 0 },
-          { transform: 'translate(-50%, 110vh) scale(1.1)', offset: 1 },
-        ], { duration: 700, easing: 'cubic-bezier(0.55, 0, 0.45, 1)' });
-
-        // Paint gets pushed down and off screen
-        await tween(paint, [
-          { clipPath: 'inset(0 0 0 0)',       offset: 0 },
-          { clipPath: 'inset(100% 0 0 0)',    offset: 1 },
-        ], { duration: 700, easing: 'cubic-bezier(0.55, 0, 0.45, 1)' });
-
-        await wipePromise;
-
-        // ── STAGE 4: Show page, logo reappears in header ──
-        page.classList.add('visible');
-        paint.style.opacity = '0';
-
-        // Logo flies back up from bottom to sit quietly in header card
-        fly.style.top  = '50%';
-        fly.style.left = '50%';
-        await tween(fly, [
-          { transform: 'translate(-50%, 110vh) scale(1.1)', opacity: 1, offset: 0 },
-          { transform: 'translate(-50%, -50%) scale(1)',    opacity: 0, offset: 1 },
-        ], { duration: 500, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' });
-
-        fly.style.display = 'none';
-        paint.style.display = 'none';
-      }
-
-      sequence().catch(() => {
-        // Fallback: just show the page
-        document.getElementById('mainPage').classList.add('visible');
-        fly.style.display = 'none';
-        paint.style.display = 'none';
-      });
+  // ── PAINT GOBS ──────────────────────────────────────
+  class PaintGob {
+    constructor(delay) {
+      this.delay = delay;
+      this.reset();
+    }
+    reset() {
+      // Start tiny at center vanishing point
+      this.x = (Math.random() - 0.5) * 60;  // slight random offset from center
+      this.y = (Math.random() - 0.5) * 60;
+      this.z = 0.0; // starts at horizon
+      this.vz = 0.004 + Math.random() * 0.006; // speed toward camera
+      // Lateral drift — paint gobs wobble as they fly
+      this.vx = (Math.random() - 0.5) * 8;
+      this.vy = (Math.random() - 0.5) * 5;
+      // Wobble physics
+      this.wobbleX = Math.random() * Math.PI * 2;
+      this.wobbleY = Math.random() * Math.PI * 2;
+      this.wobbleSpeedX = 0.08 + Math.random() * 0.12;
+      this.wobbleSpeedY = 0.06 + Math.random() * 0.1;
+      this.wobbleAmpX = 15 + Math.random() * 40;
+      this.wobbleAmpY = 10 + Math.random() * 25;
+      // Appearance
+      this.baseR = 30 + Math.random() * 60; // base radius
+      this.alpha = 0;
+      this.splattered = false;
+      this.splatTime = 0;
+      this.splatX = 0;
+      this.splatY = 0;
+      // Trailing drips
+      this.trail = [];
+      this.active = false;
+      this.born = false;
     }
 
-    function dismiss() {
+    update(t) {
+      if (t < this.delay) return;
+      if (!this.born) { this.born = true; this.active = true; }
+      if (this.splattered) return;
+
+      this.z += this.vz * (1 + this.z * 3); // accelerate as it approaches
+      this.wobbleX += this.wobbleSpeedX;
+      this.wobbleY += this.wobbleSpeedY;
+
+      const wobX = Math.sin(this.wobbleX) * this.wobbleAmpX * (1 - this.z);
+      const wobY = Math.sin(this.wobbleY) * this.wobbleAmpY * (1 - this.z);
+
+      const proj = project(this.x + wobX, this.y + wobY, this.z);
+
+      // Store trail point
+      this.trail.push({ x: proj.x, y: proj.y, s: proj.s, alpha: 0.4 });
+      if (this.trail.length > 18) this.trail.shift();
+
+      this.alpha = Math.min(1, (this.z - 0) * 4);
+
+      if (this.z >= 1.0) {
+        this.splattered = true;
+        this.splatX = proj.x;
+        this.splatY = proj.y;
+        this.splatTime = t;
+        this.splatR = this.baseR * proj.s * 2.5;
+      }
+    }
+
+    draw(t) {
+      if (!this.born) return;
+
+      // Draw trail
+      for (let i = 0; i < this.trail.length; i++) {
+        const tp = this.trail[i];
+        const a = (i / this.trail.length) * 0.35;
+        const r = tp.s * this.baseR * 0.5 * (i / this.trail.length);
+        ctx.beginPath();
+        ctx.arc(tp.x, tp.y, Math.max(2, r), 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${a})`;
+        ctx.fill();
+      }
+
+      if (this.splattered) {
+        // Splat explosion
+        const age = t - this.splatTime;
+        const splatAlpha = Math.max(0, 1 - age * 0.8);
+        // Main splat
+        ctx.beginPath();
+        ctx.arc(this.splatX, this.splatY, this.splatR * (1 + age * 2), 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${splatAlpha * 0.9})`;
+        ctx.fill();
+        // Drip tendrils
+        for (let d = 0; d < 8; d++) {
+          const angle = (d / 8) * Math.PI * 2 + this.wobbleX;
+          const len = this.splatR * (0.5 + Math.random() * 0.5) * (1 + age * 1.5);
+          const tx = this.splatX + Math.cos(angle) * len;
+          const ty = this.splatY + Math.sin(angle) * len;
+          ctx.beginPath();
+          ctx.moveTo(this.splatX, this.splatY);
+          ctx.lineTo(tx, ty);
+          ctx.strokeStyle = `rgba(255,255,255,${splatAlpha * 0.5})`;
+          ctx.lineWidth = 3 + Math.random() * 6;
+          ctx.stroke();
+        }
+        return;
+      }
+
+      // Flying gob — draw as organic blob
+      const proj = project(
+        this.x + Math.sin(this.wobbleX) * this.wobbleAmpX * (1 - this.z),
+        this.y + Math.sin(this.wobbleY) * this.wobbleAmpY * (1 - this.z),
+        this.z
+      );
+      const r = this.baseR * proj.s;
+
+      // Squish: stretched in direction of travel (perspective squish)
+      const squishX = 1.0 + this.z * 0.5;
+      const squishY = 1.0 - this.z * 0.3;
+
+      ctx.save();
+      ctx.translate(proj.x, proj.y);
+      ctx.scale(squishX, squishY);
+
+      // Outer glow
+      const grd = ctx.createRadialGradient(0, 0, r * 0.2, 0, 0, r * 1.4);
+      grd.addColorStop(0, `rgba(255,255,255,${this.alpha})`);
+      grd.addColorStop(0.6, `rgba(255,255,255,${this.alpha * 0.7})`);
+      grd.addColorStop(1, `rgba(255,255,255,0)`);
+      ctx.beginPath();
+      ctx.arc(0, 0, r * 1.4, 0, Math.PI * 2);
+      ctx.fillStyle = grd;
+      ctx.fill();
+
+      // Core blob
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${this.alpha})`;
+      ctx.fill();
+
+      ctx.restore();
+    }
+  }
+
+  // ── LOGO PROJECTILE ─────────────────────────────────
+  class LogoProjectile {
+    constructor() {
+      this.z = 0.0;
+      this.vz = 0.003;
+      this.x = 0; this.y = 0;
+      this.rotX = -0.4; // tumbling — paper flapping
+      this.rotY = 0.2;
+      this.rotZ = 0.15;
+      this.rotVX = 0.04;
+      this.rotVY = 0.02;
+      this.rotVZ = 0.01;
+      this.alpha = 0;
+      this.slapped = false;
+      this.slapTime = 0;
+      this.wipeY = -H; // wipe line position
+      this.wipeDone = false;
+      this.active = true;
+    }
+
+    update(t) {
+      if (this.slapped) {
+        // Slide down wiping paint
+        if (!this.wipeDone) {
+          this.wipeY += H * 0.04; // fast slide
+          if (this.wipeY > H * 1.2) {
+            this.wipeDone = true;
+            this.wipeY = H * 1.2;
+          }
+        }
+        return;
+      }
+
+      this.z += this.vz * (1 + this.z * 4);
+      // Paper tumbles as it flies — decelerates rotation on approach
+      const tumbleFactor = Math.max(0, 1 - this.z * 1.2);
+      this.rotX += this.rotVX * tumbleFactor;
+      this.rotY += this.rotVY * tumbleFactor;
+      this.rotZ += this.rotVZ * tumbleFactor;
+      this.alpha = Math.min(1, this.z * 3);
+
+      if (this.z >= 1.0) {
+        this.slapped = true;
+        this.slapTime = t;
+        this.wipeY = -20;
+      }
+    }
+
+    draw(t) {
+      if (!this.active || !logoImg) return;
+
+      if (this.slapped) {
+        // Draw white wipe covering everything above wipeY
+        if (!this.wipeDone) {
+          ctx.fillStyle = 'rgba(255,255,255,0.98)';
+          ctx.fillRect(0, 0, W, this.wipeY);
+
+          // Draw logo leading the wipe edge
+          const logoSize = Math.min(W, H) * 0.55;
+          ctx.save();
+          ctx.globalAlpha = 1;
+          // Slight crumple at wipe edge
+          ctx.translate(cx, this.wipeY);
+          ctx.rotate(Math.sin(t * 8) * 0.04);
+          ctx.drawImage(logoImg, -logoSize / 2, -logoSize * 0.1, logoSize, logoSize);
+          ctx.restore();
+        }
+        return;
+      }
+
+      const proj = project(this.x, this.y, this.z);
+      const size = Math.min(W, H) * 0.55 * proj.s;
+
+      ctx.save();
+      ctx.globalAlpha = this.alpha;
+      ctx.translate(proj.x, proj.y);
+
+      // 3D paper tumble illusion via skew
+      const skewX = Math.sin(this.rotY) * 0.6;
+      const skewY = Math.sin(this.rotX) * 0.3;
+      const scaleX = Math.abs(Math.cos(this.rotY));
+      const scaleY = Math.abs(Math.cos(this.rotX));
+
+      ctx.transform(scaleX, skewY, skewX, scaleY, 0, 0);
+      ctx.rotate(this.rotZ);
+
+      // Shadow on the "paper"
+      ctx.shadowColor = 'rgba(0,0,0,0.4)';
+      ctx.shadowBlur = 20 * proj.s;
+
+      ctx.drawImage(logoImg, -size / 2, -size / 2, size, size);
+      ctx.restore();
+    }
+  }
+
+  // ── SCENE STATE ──────────────────────────────────────
+  let gobs = [];
+  let logoPrj = null;
+  let paintCoverage = 0; // 0→1, how covered screen is
+  let whiteAlpha = 0;
+
+  function initScene() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    cx = W / 2; cy = H / 2;
+
+    // Spawn 12 paint gobs in staggered waves
+    gobs = [];
+    for (let i = 0; i < 12; i++) {
+      gobs.push(new PaintGob(i * 0.08));
+    }
+
+    logoPrj = new LogoProjectile();
+    paintCoverage = 0;
+    whiteAlpha = 0;
+    phase = 'paintShoot';
+    startTime = null;
+  }
+
+  function tick(timestamp) {
+    if (!running) return;
+    if (!startTime) startTime = timestamp;
+    const t = (timestamp - startTime) / 1000; // seconds
+
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    cx = W / 2; cy = H / 2;
+
+    ctx.clearRect(0, 0, W, H);
+
+    if (phase === 'paintShoot') {
+      // Update & draw gobs
+      let allSplatted = true;
+      let anySplatted = false;
+      for (const g of gobs) {
+        g.update(t);
+        g.draw(t);
+        if (!g.splattered) allSplatted = false;
+        if (g.splattered) anySplatted = true;
+      }
+
+      // Build white coverage as gobs splat
+      if (anySplatted) {
+        paintCoverage = Math.min(1, paintCoverage + 0.018);
+        // White flood fill growing from splat sites
+        ctx.fillStyle = `rgba(255,255,255,${paintCoverage * 0.7})`;
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      // After ~2s or all gobs done, launch logo
+      if (t > 1.8 || allSplatted) {
+        // Fill white
+        whiteAlpha = Math.min(1, whiteAlpha + 0.06);
+        ctx.fillStyle = `rgba(255,255,255,${whiteAlpha})`;
+        ctx.fillRect(0, 0, W, H);
+
+        if (whiteAlpha >= 1) {
+          phase = 'logoShoot';
+          startTime = timestamp; // reset timer for logo phase
+        }
+      }
+    }
+    else if (phase === 'logoShoot') {
+      // White background during logo phase
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, W, H);
+
+      logoPrj.update(t);
+      logoPrj.draw(t);
+
+      if (logoPrj.wipeDone) {
+        phase = 'done';
+        endIntro();
+        return;
+      }
+    }
+
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function endIntro() {
+    running = false;
+    canvas.style.display = 'none';
+    document.getElementById('mainPage').classList.add('visible');
+  }
+
+  function runIntro() {
+    if (!logoImg) {
+      // Load logo first
+      logoImg = new Image();
+      logoImg.crossOrigin = 'anonymous';
+      logoImg.onload = () => { startIntro(); };
+      logoImg.onerror = () => { endIntro(); }; // fallback
+      logoImg.src = 'https://wildkindness-cdn.b-cdn.net/WILDKINDNESSLOGOFINALV2.png';
+    } else {
+      startIntro();
+    }
+  }
+
+  function startIntro() {
+    canvas.style.display = 'block';
+    running = true;
+    initScene();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function dismiss() {
+    document.getElementById('ageGate').classList.add('dismissed');
+    runIntro();
+    try { sessionStorage.setItem('wk_age_ok', '1'); } catch(e) {}
+  }
+
+  try {
+    if (sessionStorage.getItem('wk_age_ok') === '1') {
       document.getElementById('ageGate').classList.add('dismissed');
       runIntro();
-      try { sessionStorage.setItem('wk_age_ok', '1'); } catch(e) {}
     }
-
-    try {
-      if (sessionStorage.getItem('wk_age_ok') === '1') {
-        document.getElementById('ageGate').classList.add('dismissed');
-        runIntro();
-      }
-    } catch(e) {}
+  } catch(e) {}
   </script>
 
 </body>
