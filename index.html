@@ -17,7 +17,7 @@
       --gray:  #888888;
       --red:   #E31C1C;
       --gold:  #F5C518;
-      --glass: rgba(20,14,8,0.38);
+      --glass: rgba(255,255,255,0.08);
     }
 
     * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -79,24 +79,38 @@
 
     /* ── HEADER CARD ── */
     .header-card {
-      backdrop-filter: blur(40px) saturate(1.8) brightness(1.1);
-      -webkit-backdrop-filter: blur(40px) saturate(1.8) brightness(1.1);
+      backdrop-filter: blur(60px) saturate(2.2) brightness(1.15) contrast(0.9);
+      -webkit-backdrop-filter: blur(60px) saturate(2.2) brightness(1.15) contrast(0.9);
       background: var(--glass);
-      border: 1px solid rgba(255,255,255,0.18);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.28);
+      border-bottom-color: rgba(255,255,255,0.10);
+      border-radius: 24px;
+      /* Specular highlight top, shadow bottom */
+      box-shadow:
+        0 0 0 0.5px rgba(255,255,255,0.12) inset,
+        0 1.5px 0 0 rgba(255,255,255,0.55) inset,
+        0 -1px 0 0 rgba(0,0,0,0.18) inset,
+        0 20px 60px rgba(0,0,0,0.35),
+        0 4px 12px rgba(0,0,0,0.2);
       padding: 28px 24px 24px;
       display: flex; flex-direction:column; align-items:center; text-align:center;
-      position:relative;
+      position:relative; overflow:hidden;
     }
+    /* Subtle rainbow/wet glass refraction sheen */
     .header-card::after {
-      content:''; position:absolute; inset:4px;
-      border:0.5px solid rgba(255,255,255,0.06); pointer-events:none;
+      content:''; position:absolute;
+      inset:0; border-radius:24px;
+      background: linear-gradient(
+        135deg,
+        rgba(255,255,255,0.18) 0%,
+        rgba(255,255,255,0.04) 30%,
+        transparent 50%,
+        rgba(255,255,255,0.03) 70%,
+        rgba(255,255,255,0.10) 100%
+      );
+      pointer-events:none;
     }
-    /* Red top accent bar */
-    .header-card::before {
-      content:''; position:absolute; top:0; left:0; right:0;
-      height:3px; background:var(--red);
-    }
+    
 
     .logo-img {
       width: clamp(110px, 38vw, 160px);
@@ -120,13 +134,36 @@
 
     /* ── LINKS BOX ── */
     .links-box {
-      backdrop-filter: blur(40px) saturate(1.8) brightness(1.1);
-      -webkit-backdrop-filter: blur(40px) saturate(1.8) brightness(1.1);
+      backdrop-filter: blur(60px) saturate(2.2) brightness(1.15) contrast(0.9);
+      -webkit-backdrop-filter: blur(60px) saturate(2.2) brightness(1.15) contrast(0.9);
       background: var(--glass);
-      border: 1px solid rgba(255,255,255,0.18);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(0,0,0,0.2);
-      position:relative;
+      border: 1px solid rgba(255,255,255,0.28);
+      border-bottom-color: rgba(255,255,255,0.10);
+      border-radius: 24px;
+      box-shadow:
+        0 0 0 0.5px rgba(255,255,255,0.12) inset,
+        0 1.5px 0 0 rgba(255,255,255,0.55) inset,
+        0 -1px 0 0 rgba(0,0,0,0.18) inset,
+        0 20px 60px rgba(0,0,0,0.35),
+        0 4px 12px rgba(0,0,0,0.2);
+      position:relative; overflow:hidden;
     }
+    /* Sheen overlay on links box too */
+    .links-box::before {
+      content:''; position:absolute;
+      inset:0; border-radius:24px;
+      background: linear-gradient(
+        135deg,
+        rgba(255,255,255,0.14) 0%,
+        rgba(255,255,255,0.03) 30%,
+        transparent 50%,
+        rgba(255,255,255,0.02) 70%,
+        rgba(255,255,255,0.08) 100%
+      );
+      pointer-events:none; z-index:0;
+    }
+    /* Remove old inset border pseudo */
+    .links-box::after { display:none; }
     .links-box::after {
       content:''; position:absolute; inset:4px;
       border:0.5px solid rgba(255,255,255,0.06); pointer-events:none;
@@ -134,7 +171,7 @@
 
     .link-btn {
       display:flex; align-items:center; gap:14px;
-      width:100%; padding:13px 18px;
+      width:100%; padding:13px 20px;
       border-bottom:1px solid rgba(255,255,255,0.07);
       color:var(--white); text-decoration:none;
       font-family:'Anton',sans-serif; font-size:14px;
@@ -144,8 +181,9 @@
       background:none; border-left:none; border-right:none; border-top:none;
       text-align:left;
     }
-    .link-btn:last-child { border-bottom:none; }
-    .link-btn:hover { background:rgba(227,28,28,0.1); padding-left:26px; }
+    .link-btn:first-child { border-radius:24px 24px 0 0; }
+    .link-btn:last-child  { border-bottom:none; border-radius:0 0 24px 24px; }
+    .link-btn:hover { background:rgba(255,255,255,0.07); padding-left:28px; }
 
     .link-icon { width:28px; height:28px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--gray); transition:color 0.18s; }
     .link-icon svg { width:18px; height:18px; fill:currentColor; }
