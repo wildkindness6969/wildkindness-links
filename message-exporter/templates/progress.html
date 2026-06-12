@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Step 2 of 2 — Exporting…</h2>
+<div class="progress-track"><div class="progress-bar" id="bar" style="width:0%"></div></div>
+<p id="stage" class="stage">Starting…</p>
+<p class="hint">Large message histories can take a few minutes. Keep this page open.</p>
+<div id="error" class="callout error" hidden></div>
+<p id="back" hidden><a class="button" href="{{ url_for('index', t=token) }}">← Try again</a></p>
+
+<script>
+const token = {{ token|tojson }};
+async function poll() {
+  try {
+    const res = await fetch(`/status?t=${token}`);
+    const s = await res.json();
+    document.getElementById("bar").style.width = `${s.percent}%`;
+    document.getElementById("stage").textContent = s.stage || "Working…";
+    if (s.error) {
+      const err = document.getElementById("error");
+      err.textContent = s.error;
+      err.hidden = false;
+      document.getElementById("back").hidden = false;
+      return;
+    }
+    if (s.done) {
+      window.location = `/done?t=${token}`;
+      return;
+    }
+  } catch (e) { /* server briefly busy; keep polling */ }
+  setTimeout(poll, 500);
+}
+poll();
+</script>
+{% endblock %}

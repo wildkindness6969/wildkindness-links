@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if error %}
+<div class="callout error">{{ error }}</div>
+{% endif %}
+
+{% if fda_blocked %}
+<div class="callout error">
+  <h2>macOS is blocking access to your backups</h2>
+  <p>This is normal the first time. To fix it:</p>
+  <ol>
+    <li>Open <strong>System Settings → Privacy &amp; Security → Full Disk Access</strong></li>
+    <li>Turn on the switch next to <strong>Terminal</strong></li>
+    <li>Quit Terminal completely (⌘Q), then double-click <strong>run.command</strong> again</li>
+  </ol>
+</div>
+{% elif backups %}
+<h2>Step 1 of 2 — Choose a backup</h2>
+<p>These iPhone backups were found on this computer. Pick the one to export:</p>
+<div class="backup-list">
+  {% for b in backups %}
+  <form method="post" action="{{ url_for('start') }}" class="backup-card">
+    <input type="hidden" name="t" value="{{ token }}">
+    <input type="hidden" name="backup_path" value="{{ b.path }}">
+    <div class="backup-info">
+      <strong>{{ b.device_name }}</strong>
+      {% if b.encrypted %}<span class="lock" title="Encrypted backup">🔒 encrypted</span>{% endif %}
+      <div class="backup-meta">
+        {% if b.last_backup_date %}Backed up {{ b.last_backup_date.strftime("%B %d, %Y at %I:%M %p") }} · {% endif %}
+        {{ b.size_display }}
+        {% if b.phone_number %} · {{ b.phone_number }}{% endif %}
+        {% if b.product_version %} · iOS {{ b.product_version }}{% endif %}
+      </div>
+    </div>
+    <button type="submit" class="primary">Export this backup</button>
+  </form>
+  {% endfor %}
+</div>
+{% else %}
+<h2>No iPhone backups found yet</h2>
+<div class="callout">
+  <p>First, back up your iPhone to this {{ "Mac" if is_mac else "computer" }}:</p>
+  <ol>
+    <li>Plug your iPhone into this computer with its cable</li>
+    <li>If the phone asks, tap <strong>Trust This Computer</strong> and enter your phone passcode</li>
+    <li>Open <strong>Finder</strong> and click your iPhone in the left sidebar</li>
+    <li>Under "Backups", choose <strong>Back up all of the data on your iPhone to this Mac</strong></li>
+    <li>Click <strong>Back Up Now</strong> and wait for it to finish (this can take a while)</li>
+  </ol>
+  <p>Then come back here and click Rescan.</p>
+</div>
+<p><a class="button primary" href="{{ url_for('index', t=token) }}">🔄 Rescan for backups</a></p>
+{% endif %}
+
+<details class="advanced">
+  <summary>Advanced: use a backup folder somewhere else</summary>
+  <form method="post" action="{{ url_for('start') }}" class="manual-form">
+    <input type="hidden" name="t" value="{{ token }}">
+    <label>Full path to the backup folder
+      <input type="text" name="backup_path" placeholder="/Volumes/ExternalDrive/Backup/00008110-…" required>
+    </label>
+    <button type="submit">Export from this folder</button>
+  </form>
+</details>
+
+<footer class="privacy-note">
+  🔐 Private by design: this tool runs only on your computer, sends nothing over the internet,
+  and deletes its temporary files when it finishes.
+</footer>
+{% endblock %}

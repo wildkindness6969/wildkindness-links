@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Message Exporter</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main>
+    <header class="app-header">
+      <h1>💬 Message Exporter</h1>
+      <p class="tagline">Turn your iPhone text messages into PDFs and a spreadsheet — everything stays on this computer.</p>
+    </header>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
