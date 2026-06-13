@@ -1,6 +1,7 @@
 """End-to-end orchestration: backup dir (or bare sms.db) -> PDFs + Excel."""
 from __future__ import annotations
 
+import shutil
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -8,7 +9,7 @@ from typing import Callable
 
 from .backup.decrypt import open_backup
 from .backup.locate import read_backup_info
-from .config import DEFAULT_OUTPUT_ROOT, OWNER_NUMBER
+from .config import DEFAULT_BACKUP_CACHE, DEFAULT_OUTPUT_ROOT, OWNER_NUMBER
 from .exporters import ALL_EXPORTERS
 from .models import ExportBundle
 from .normalize import build_bundle
@@ -64,6 +65,44 @@ def run_export_from_backup(
             progress=lambda d, p: report(d, 0.15 + p * 0.5),
         )
         return run_exporters(bundle, Path(out_dir), progress)
+
+
+def run_export_from_device(
+    udid: str,
+    password: str | None = None,
+    out_dir: Path | None = None,
+    cache_dir: Path | None = None,
+    discard_backup: bool = False,
+    progress: ProgressFn | None = None,
+) -> ExportResult:
+    """Back up a connected iPhone, then export its messages.
+
+    The backup is the slow part, so it owns the first 60% of the progress bar.
+    By default the backup is kept under ``cache_dir`` so the next run is a fast
+    incremental delta; pass ``discard_backup=True`` to delete it afterwards and
+    reclaim the disk space (at the cost of a full backup next time).
+    """
+    from .backup.device import backup_device
+
+    if cache_dir is None:
+        cache_dir = DEFAULT_BACKUP_CACHE
+
+    def report(detail: str, pct: float) -> None:
+        if progress:
+            progress(detail, pct)
+
+    backup_dir = backup_device(
+        udid, Path(cache_dir),
+        progress=lambda d, p: report(d, p * 0.6),
+    )
+    try:
+        return run_export_from_backup(
+            backup_dir, password, out_dir,
+            progress=lambda d, p: report(d, 0.6 + p * 0.4),
+        )
+    finally:
+        if discard_backup:
+            shutil.rmtree(backup_dir, ignore_errors=True)
 
 
 def run_export_from_sms_db(

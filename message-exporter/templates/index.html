@@ -5,6 +5,48 @@
 <div class="callout error">{{ error }}</div>
 {% endif %}
 
+{% if devices %}
+<h2>Back up your iPhone now</h2>
+<p>These iPhones are plugged in. Pick one and the app will back it up for you,
+   then export the messages — no need to use Finder first.</p>
+<div class="backup-list">
+  {% for d in devices %}
+  <form method="post" action="{{ url_for('start_device') }}" class="backup-card">
+    <input type="hidden" name="t" value="{{ token }}">
+    <input type="hidden" name="udid" value="{{ d.udid }}">
+    <div class="backup-info">
+      <strong>{{ d.name }}</strong>
+      <div class="backup-meta">
+        {% if d.product_version %}iOS {{ d.product_version }} · {% endif %}
+        {% if d.phone_number %}{{ d.phone_number }} · {% endif %}
+        connected
+      </div>
+      <details class="advanced">
+        <summary>Options</summary>
+        <label>Backup password (only if your iPhone backup is encrypted)
+          <input type="password" name="password" autocomplete="off">
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" name="discard_backup">
+          Delete the backup afterwards (slower next time, but uses no extra disk)
+        </label>
+      </details>
+    </div>
+    <button type="submit" class="primary">Back up &amp; export</button>
+  </form>
+  {% endfor %}
+</div>
+<p class="hint">The first backup can take a while; after that they're quick
+   because only new messages are copied.</p>
+<hr>
+{% elif have_device_tools %}
+<div class="callout">
+  <strong>No iPhone detected for direct backup.</strong>
+  Plug your iPhone in with a cable, unlock it, tap <strong>Trust This Computer</strong>
+  if asked, then <a href="{{ url_for('index', t=token) }}">refresh</a> to back it up here.
+</div>
+{% endif %}
+
 {% if fda_blocked %}
 <div class="callout error">
   <h2>macOS is blocking access to your backups</h2>
@@ -51,6 +93,16 @@
   <p>Then come back here and click Rescan.</p>
 </div>
 <p><a class="button primary" href="{{ url_for('index', t=token) }}">🔄 Rescan for backups</a></p>
+{% endif %}
+
+{% if not have_device_tools %}
+<details class="advanced">
+  <summary>Want the app to back up your iPhone for you?</summary>
+  <p>Install the free <strong>libimobiledevice</strong> tools and the app can make
+     the backup itself — no Finder step. On a Mac, open Terminal and run:</p>
+  <pre>brew install libimobiledevice</pre>
+  <p>Then plug in your iPhone and refresh this page.</p>
+</details>
 {% endif %}
 
 <details class="advanced">
