@@ -30,12 +30,33 @@ decision made autonomously and continue.
 
 ## Stage runbooks
 
-### Stage 1 — References
-Ask the user to drop screenshots if none exist (this is the one stage that
-genuinely needs user input at any autonomy level for a brand-new creator).
-Store in `references/<slug>/`. If the web is reachable, also pull relevant
-style ideas from styles.refero.design / getdesign.md into
-`design-systems/inspiration/`.
+### Stage 1 — References (archive-first)
+The reference library is an ongoing archive shared across all projects:
+files in `references/library/`, indexed in `references/INDEX.md`.
+
+1. **Search the archive first.** Read `references/INDEX.md`, match the
+   creator's vibe words against entry tags, and open the matching images to
+   confirm relevance. Present matches to the user: "the library already has
+   these N references that fit — reuse, and/or add new ones?"
+2. **Ask for what's missing.** Only ask the user for new screenshots to fill
+   gaps the archive can't cover (this is the one stage that genuinely needs
+   user input at any autonomy level for a brand-new vibe).
+3. **Archive everything new.** For each new reference the user drops
+   (uploads land in the session uploads dir — copy them into the repo):
+   - Name it `references/library/ref-NNN-<short-slug>.png` (next free NNN).
+   - Add a catalog row in `INDEX.md`: tags (style adjectives + subject
+     type), source, date, project using it.
+   Never leave a user-provided reference un-archived — that's the compound
+   interest of this whole system.
+4. **Link, don't copy, per project.** The creator's brief lists the ref IDs
+   it uses; `references/<slug>/` holds only project-specific material
+   (their own brand assets, Stage-3 direction mockups) — shared references
+   live once, in the library.
+5. After Gate B and after shipping, update the **Verdict** column for every
+   reference used: did the direction it inspired win or lose?
+
+If the web is reachable, also pull style ideas from styles.refero.design /
+getdesign.md into `design-systems/inspiration/` and index them in INDEX.md.
 
 ### Stage 2 — Brief
 Fill `briefs/_TEMPLATE.md` from everything known. Draft 2–3 structure

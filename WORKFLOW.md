@@ -61,11 +61,16 @@ Regardless of level, **Gate D never auto-passes** for anything that overwrites
 
 ## Pipeline
 
-### Stage 1 — Collect design references
-- Browse styles.refero.design and getdesign.md for looks that fit; save
-  screenshots into `references/<creator>/` and grab matching `design.md`
-  files into `design-systems/inspiration/`.
-- The creator dropping screenshots of sites they love works just as well.
+### Stage 1 — Collect design references (archive-first)
+- References live in an **ongoing shared library** (`references/library/`,
+  indexed by tags in `references/INDEX.md`) that grows with every run.
+- The workflow searches the library first and presents existing matches,
+  then asks for new project-specific references only to fill gaps.
+- Every new reference the user provides is archived into the library with
+  an ID, tags, and source — so the second run already knows what the first
+  run learned. Wins/losses are recorded per reference after Gate B and ship.
+- Also: browse styles.refero.design / getdesign.md for fits; grab matching
+  `design.md` files into `design-systems/inspiration/` (indexed too).
 - Returning creator with an approved design system → skip to Stage 5.
 
 ### Stage 2 — Collect subject information
@@ -136,7 +141,9 @@ design-systems/
   wild-kindness.design.md   # extracted from the live neon-after-hours page
   inspiration/              # design.md files grabbed from getdesign.md etc.
 references/
-  <creator>/                # style screenshots
+  INDEX.md                  # tag-searchable catalog of the whole library
+  library/                  # the ongoing shared archive (ref-NNN-*.png)
+  <creator>/                # project-only material (brand assets)
   <creator>/directions/     # Stage-3 mockup images
 .claude/skills/design-site/ # the /design-site skill that runs this pipeline
 WORKFLOW.md                 # this file (autonomy dial lives here)
